@@ -45,31 +45,31 @@ body{
 
 .wave{
   position:absolute;
-  width:220%;
-  height:220%;
-  left:-60%;
-  top:-60%;
+  width:200%;
+  height:200%;
+  left:-50%;
+  top:-50%;
 
   background:
     radial-gradient(
       circle at center,
-      rgba(126,231,255,0.045),
+      rgba(126,231,255,0.05),
       transparent 60%
     );
 
-  animation:rotateWave 50s linear infinite;
+  animation:rotateWave 45s linear infinite;
 }
 
 .wave2{
-  animation-duration:80s;
+  animation-duration:70s;
   opacity:0.5;
-  transform:scale(1.25);
+  transform:scale(1.2);
 }
 
 .wave3{
-  animation-duration:120s;
+  animation-duration:100s;
   opacity:0.25;
-  transform:scale(1.45);
+  transform:scale(1.4);
 }
 
 @keyframes rotateWave{
@@ -139,113 +139,64 @@ body{
 
 }
 
-/* PEZ */
+.creature{
+
+  position:absolute;
+
+  border:
+    1px solid rgba(126,231,255,0.22);
+
+  opacity:0.22;
+
+  filter:blur(0.5px);
+
+  box-shadow:
+    0 0 18px rgba(126,231,255,0.12),
+    0 0 45px rgba(126,231,255,0.06);
+
+}
 
 .creature1{
 
-  position:absolute;
-
-  width:180px;
-  height:70px;
-
-  border:1px solid rgba(126,231,255,0.18);
+  width:500px;
+  height:160px;
 
   border-radius:50%;
 
-  top:18%;
-  left:-250px;
+  left:-600px;
+  top:20%;
 
-  opacity:0.18;
-
-  filter:blur(0px);
-
-  animation:swim1 40s linear infinite;
+  animation:swim1 55s linear infinite;
 
 }
-
-.creature1::after{
-
-  content:"";
-
-  position:absolute;
-
-  right:-28px;
-  top:18px;
-
-  width:45px;
-  height:30px;
-
-  border:1px solid rgba(126,231,255,0.18);
-
-  clip-path:polygon(0 50%,100% 0,100% 100%);
-
-}
-
-/* BALLENA */
 
 .creature2{
 
-  position:absolute;
+  width:300px;
+  height:300px;
 
-  width:420px;
-  height:120px;
+  border-radius:35%;
 
-  border:1px solid rgba(126,231,255,0.14);
-
-  border-radius:50%;
-
+  right:-400px;
   top:65%;
-  right:-500px;
-
-  opacity:0.14;
-
-  filter:blur(0px);
-
-  animation:swim2 85s linear infinite;
-
-}
-
-.creature2::before{
-
-  content:"";
-
-  position:absolute;
-
-  left:-45px;
-  top:38px;
-
-  width:70px;
-  height:40px;
-
-  border:1px solid rgba(126,231,255,0.14);
-
-  clip-path:polygon(100% 50%,0 0,0 100%);
-
-}
-
-/* RAYA */
-
-.creature3{
-
-  position:absolute;
-
-  width:240px;
-  height:240px;
-
-  border:1px solid rgba(126,231,255,0.12);
-
-  border-radius:40%;
 
   transform:rotate(45deg);
 
-  top:40%;
-  left:-350px;
+  animation:swim2 80s linear infinite;
 
-  opacity:0.12;
+}
 
-  filter:blur(0px);
+.creature3{
 
-  animation:swim3 65s linear infinite;
+  width:700px;
+  height:120px;
+
+  border-radius:50%;
+
+  left:-800px;
+  top:75%;
+
+  animation:swim3 95s linear infinite;
 
 }
 
@@ -253,14 +204,16 @@ body{
 
   from{
     transform:
-      translateX(0px)
-      translateY(0px);
+      translateX(0)
+      translateY(0)
+      rotate(0deg);
   }
 
   to{
     transform:
-      translateX(160vw)
-      translateY(25px);
+      translateX(2200px)
+      translateY(40px)
+      rotate(6deg);
   }
 
 }
@@ -269,14 +222,14 @@ body{
 
   from{
     transform:
-      translateX(0px)
-      translateY(0px);
+      translateX(0)
+      rotate(45deg);
   }
 
   to{
     transform:
-      translateX(-180vw)
-      translateY(-30px);
+      translateX(-2200px)
+      rotate(80deg);
   }
 
 }
@@ -285,14 +238,14 @@ body{
 
   from{
     transform:
-      translateX(0px)
-      rotate(45deg);
+      translateX(0)
+      translateY(0);
   }
 
   to{
     transform:
-      translateX(180vw)
-      rotate(65deg);
+      translateX(2600px)
+      translateY(-60px);
   }
 
 }
@@ -588,18 +541,20 @@ button:hover{
 
 .evento{
 
-  margin-top:15px;
+  margin-top:22px;
+
+  margin-bottom:40px;
 
   padding:18px;
 
-  border:1px solid rgba(126,231,255,0.15);
+  border:1px solid rgba(126,231,255,0.18);
 
   background:rgba(126,231,255,0.05);
 
   letter-spacing:1px;
 
   box-shadow:
-    0 0 25px rgba(126,231,255,0.08);
+    0 0 25px rgba(126,231,255,0.10);
 
 }
 
@@ -635,6 +590,8 @@ button:hover{
 
 <body>
 
+<!-- Fondo -->
+
 <div class="ocean">
 
   <div class="wave"></div>
@@ -647,11 +604,13 @@ button:hover{
 
 <div class="deep-sea">
 
-  <div class="creature1"></div>
-  <div class="creature2"></div>
-  <div class="creature3"></div>
+  <div class="creature creature1"></div>
+  <div class="creature creature2"></div>
+  <div class="creature creature3"></div>
 
 </div>
+
+<!-- Contenido -->
 
 <div class="container">
 
@@ -702,7 +661,9 @@ button:hover{
 
 <script>
 
-/* PARTICULAS */
+/* =========================
+   PARTICULAS
+========================= */
 
 const particlesContainer =
 document.getElementById("particles");
@@ -727,7 +688,9 @@ for(let i=0;i<45;i++){
 
 }
 
-/* JUGADORES */
+/* =========================
+   JUGADORES
+========================= */
 
 const playersContainer =
 document.getElementById("playersContainer");
@@ -741,6 +704,8 @@ function crearJugadores(){
 
   const cantidad =
     parseInt(cantidadJugadores.value);
+
+  const maxNumero = 5;
 
   for(let i=1; i<=cantidad; i++){
 
@@ -777,7 +742,7 @@ function crearJugadores(){
 
         <select class="valor">
 
-          ${Array.from({length:5}, (_,k)=>`
+          ${Array.from({length:maxNumero}, (_,k)=>`
 
             <option value="${k+1}">
               ${k+1}
@@ -804,7 +769,9 @@ cantidadJugadores.addEventListener(
 
 crearJugadores();
 
-/* CALCULO */
+/* =========================
+   CALCULO
+========================= */
 
 function calcular(){
 
@@ -919,71 +886,6 @@ function calcular(){
   const sumaMinoria =
     Math.abs(sumaMinoriaReal);
 
-  /* MAREA */
-
-  if(sumaMayoria === 0){
-
-    document.getElementById("resultado").innerHTML = `
-
-      <div class="bloque">
-
-        <h2>MAYORÍA</h2>
-
-        <p>
-          ${mayoria.nombre}
-          — ${mayoria.jugadores.length} jugadores
-        </p>
-
-      </div>
-
-      <div class="bloque">
-
-        <h2>MINORÍA</h2>
-
-        <p>
-          ${minoria.nombre}
-          — ${minoria.jugadores.length} jugadores
-        </p>
-
-      </div>
-
-      <div class="bloque">
-
-        <h2>SUMA MAYORÍA</h2>
-
-        <p class="highlight">
-          ${sumaMayoriaReal}
-        </p>
-
-      </div>
-
-      <div class="evento">
-
-        MAREA ACTIVADA
-        <br><br>
-
-        La Minoría recupera 2 HP.
-
-      </div>
-
-      <div class="bloque">
-
-        <h2>RESULTADO FINAL</h2>
-
-        <p class="highlight">
-          La Minoría recupera 2 HP.
-        </p>
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-  /* DAÑO NORMAL */
-
   let dañoBase;
 
   if(sumaMayoria > vivos){
@@ -1067,13 +969,45 @@ function calcular(){
         La suma de la Mayoría es ${sumaMayoria}.
       </div>
 
+  `;
+
+  if(sumaMayoria > vivos){
+
+    html += `
+
+      <div class="paso">
+        ${sumaMayoria}
+        supera la cantidad de jugadores vivos.
+      </div>
+
+    `;
+
+  }else{
+
+    html += `
+
+      <div class="paso">
+        ${sumaMayoria}
+        es menor o igual a la cantidad de jugadores vivos.
+      </div>
+
+    `;
+
+  }
+
+  if(sumaMayoria !== 0){
+
+    html += `
+
       <div class="paso">
         El daño inicialmente iría hacia la ${dañoBase}.
       </div>
 
-  `;
+    `;
 
-  if(tornado){
+  }
+
+  if(tornado && sumaMayoria !== 0){
 
     html += `
 
@@ -1090,29 +1024,72 @@ function calcular(){
 
   }
 
+  if(sumaMayoria === 0){
+
+    html += `
+
+      <div class="evento">
+
+        MAREA ACTIVADA
+        <br><br>
+
+        La Minoría recupera 2 HP.
+
+      </div>
+
+    `;
+
+  }
+
   html += `
 
     </div>
 
-    <div class="bloque">
-
-      <h2>RESULTADO FINAL</h2>
-
-      <p class="highlight">
-        La ${dañoFinal}
-        recibe ${sumaMayoria} de daño.
-      </p>
-
-    </div>
-
   `;
+
+  if(sumaMayoria === 0){
+
+    html += `
+
+      <div class="bloque">
+
+        <h2>RESULTADO FINAL</h2>
+
+        <p class="highlight">
+          La Minoría recupera 2 HP.
+        </p>
+
+      </div>
+
+    `;
+
+  }else{
+
+    html += `
+
+      <div class="bloque">
+
+        <h2>RESULTADO FINAL</h2>
+
+        <p class="highlight">
+          La ${dañoFinal}
+          recibe ${sumaMayoria} de daño.
+        </p>
+
+      </div>
+
+    `;
+
+  }
 
   document.getElementById("resultado").innerHTML =
     html;
 
 }
 
-/* PARTICULAS CLICK */
+/* =========================
+   PARTICULAS CLICK
+========================= */
 
 function createParticle(x,y){
 
