@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Simulación — Arrecife</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:#000;
+  color:white;
+  font-family:Arial, sans-serif;
+  overflow-x:hidden;
+  min-height:100vh;
+  padding:60px 20px;
+  position:relative;
+}
+
+/* Fondo */
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,0.04), transparent 60%);
+  pointer-events:none;
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:
+    radial-gradient(white 1px, transparent 1px);
+  background-size:120px 120px;
+  opacity:0.03;
+  animation:float 35s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes float{
+  from{
+    transform:translateY(0px);
+  }
+  to{
+    transform:translateY(-120px);
+  }
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+  position:relative;
+  z-index:2;
+}
+
+.header{
+  text-align:center;
+  margin-bottom:70px;
+}
+
+.logo{
+  letter-spacing:8px;
+  font-size:12px;
+  opacity:0.6;
+  margin-bottom:25px;
+}
+
+h1{
+  font-weight:normal;
+  font-size:42px;
+  margin-bottom:15px;
+  letter-spacing:2px;
+}
+
+.sub{
+  opacity:0.5;
+  line-height:1.8;
+  font-size:14px;
+}
+
+.controls{
+  text-align:center;
+  margin-bottom:60px;
+}
+
+select{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.2);
+  color:white;
+  padding:12px 18px;
+  font-size:14px;
+  letter-spacing:1px;
+}
+
+.players{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:25px;
+  margin-bottom:60px;
+}
+
+.player-card{
+  border:1px solid rgba(255,255,255,0.08);
+  padding:25px;
+  background:rgba(255,255,255,0.02);
+  backdrop-filter:blur(5px);
+  transition:0.3s;
+}
+
+.player-card:hover{
+  border-color:rgba(255,255,255,0.25);
+  transform:translateY(-2px);
+}
+
+.player-title{
+  margin-bottom:25px;
+  letter-spacing:3px;
+  font-size:12px;
+  opacity:0.6;
+}
+
+.field{
+  margin-bottom:18px;
+}
+
+.field label{
+  display:block;
+  margin-bottom:8px;
+  font-size:11px;
+  letter-spacing:2px;
+  opacity:0.4;
+}
+
+.field select{
+  width:100%;
+}
+
+button{
+  display:block;
+  margin:0 auto 70px;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.25);
+  color:white;
+  padding:16px 45px;
+  letter-spacing:3px;
+  cursor:pointer;
+  transition:0.3s;
+  font-size:12px;
+}
+
+button:hover{
+  background:white;
+  color:black;
+}
+
+.resultado{
+  border-top:1px solid rgba(255,255,255,0.1);
+  padding-top:60px;
+  max-width:800px;
+  margin:auto;
+}
+
+.bloque{
+  margin-bottom:45px;
+}
+
+.bloque h2{
+  font-weight:normal;
+  font-size:13px;
+  letter-spacing:4px;
+  opacity:0.5;
+  margin-bottom:15px;
+}
+
+.bloque p{
+  font-size:20px;
+  line-height:1.8;
+}
+
+.evento{
+  margin-top:15px;
+  padding:18px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.03);
+  letter-spacing:1px;
+}
+
+.paso{
+  margin-bottom:18px;
+  opacity:0.75;
+  line-height:1.8;
+}
+
+.highlight{
+  font-size:28px;
+}
+
+@media(max-width:700px){
+
+  h1{
+    font-size:30px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+
+    <div class="logo">
+      ARRECIFE
+    </div>
+
+    <h1>Simulación</h1>
+
+    <div class="sub">
+      Observá qué ocurre cuando el grupo se divide.
+    </div>
+
+  </div>
+
+  <div class="controls">
+
+    <select id="cantidadJugadores">
+      <option value="3">3 jugadores</option>
+      <option value="4">4 jugadores</option>
+      <option value="5" selected>5 jugadores</option>
+      <option value="6">6 jugadores</option>
+      <option value="7">7 jugadores</option>
+    </select>
+
+  </div>
+
+  <div class="players" id="playersContainer"></div>
+
+  <button onclick="calcular()">
+    ANALIZAR RONDA
+  </button>
+
+  <div class="resultado" id="resultado"></div>
+
+</div>
+
+<script>
+
+const playersContainer = document.getElementById("playersContainer");
+const cantidadJugadores = document.getElementById("cantidadJugadores");
+
+function crearJugadores(){
+
+  playersContainer.innerHTML = "";
+
+  const cantidad = parseInt(cantidadJugadores.value);
+
+  const maxNumero = cantidad <= 4 ? 4 : 5;
+
+  for(let i=1; i<=cantidad; i++){
+
+    const card = document.createElement("div");
+    card.className = "player-card";
+
+    card.innerHTML = `
+
+      <div class="player-title">
+        JUGADOR ${i}
+      </div>
+
+      <div class="field">
+        <label>EQUIPO</label>
+        <select class="equipo">
+          <option value="Algas">Algas</option>
+          <option value="Corales">Corales</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>SIGNO</label>
+        <select class="signo">
+          <option value="+">+</option>
+          <option value="-">-</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>VALOR</label>
+        <select class="valor">
+          ${Array.from({length:maxNumero}, (_,k)=>`
+            <option value="${k+1}">
+              ${k+1}
+            </option>
+          `).join("")}
+        </select>
+      </div>
+
+    `;
+
+    playersContainer.appendChild(card);
+
+  }
+
+}
+
+cantidadJugadores.addEventListener("change", crearJugadores);
+
+crearJugadores();
+
+function calcular(){
+
+  const cards = document.querySelectorAll(".player-card");
+
+  const jugadores = [];
+
+  cards.forEach(card=>{
+
+    const equipo = card.querySelector(".equipo").value;
+    const signo = card.querySelector(".signo").value;
+    const valor = parseInt(card.querySelector(".valor").value);
+
+    jugadores.push({
+      equipo,
+      signo,
+      valor,
+      aporte: signo === "+" ? valor : -valor
+    });
+
+  });
+
+  const vivos = jugadores.length;
+
+  const algas = jugadores.filter(j=>j.equipo==="Algas");
+  const corales = jugadores.filter(j=>j.equipo==="Corales");
+
+  if(algas.length === 0 || corales.length === 0){
+
+    document.getElementById("resultado").innerHTML = `
+
+      <div class="bloque">
+        <h2>RESULTADO</h2>
+        <p class="highlight">
+          Todos eligieron el mismo equipo.
+        </p>
+      </div>
+
+      <div class="evento">
+        La ronda se reinicia.
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+  let mayoria;
+  let minoria;
+
+  if(algas.length > corales.length){
+
+    mayoria = {
+      nombre:"Algas",
+      jugadores:algas
+    };
+
+    minoria = {
+      nombre:"Corales",
+      jugadores:corales
+    };
+
+  }else{
+
+    mayoria = {
+      nombre:"Corales",
+      jugadores:corales
+    };
+
+    minoria = {
+      nombre:"Algas",
+      jugadores:algas
+    };
+
+  }
+
+  const sumaMayoriaReal = mayoria.jugadores.reduce((a,b)=>a+b.aporte,0);
+  const sumaMinoriaReal = minoria.jugadores.reduce((a,b)=>a+b.aporte,0);
+
+  const sumaMayoria = Math.abs(sumaMayoriaReal);
+  const sumaMinoria = Math.abs(sumaMinoriaReal);
+
+  let dañoBase;
+
+  if(sumaMayoria > vivos){
+
+    dañoBase = "Mayoría";
+
+  }else{
+
+    dañoBase = "Minoría";
+
+  }
+
+  let tornado = false;
+
+  let dañoFinal = dañoBase;
+
+  if(sumaMinoria > sumaMayoria){
+
+    tornado = true;
+
+    dañoFinal = dañoBase === "Mayoría"
+      ? "Minoría"
+      : "Mayoría";
+
+  }
+
+  let html = `
+
+    <div class="bloque">
+      <h2>MAYORÍA</h2>
+      <p>
+        ${mayoria.nombre} — ${mayoria.jugadores.length} jugadores
+      </p>
+    </div>
+
+    <div class="bloque">
+      <h2>MINORÍA</h2>
+      <p>
+        ${minoria.nombre} — ${minoria.jugadores.length} jugadores
+      </p>
+    </div>
+
+    <div class="bloque">
+      <h2>SUMA MAYORÍA</h2>
+      <p class="highlight">
+        ${sumaMayoriaReal}
+      </p>
+    </div>
+
+    <div class="bloque">
+      <h2>SUMA MINORÍA</h2>
+      <p class="highlight">
+        ${sumaMinoriaReal}
+      </p>
+    </div>
+
+    <div class="bloque">
+      <h2>ANÁLISIS</h2>
+
+      <div class="paso">
+        Hay ${vivos} jugadores vivos.
+      </div>
+
+      <div class="paso">
+        La suma de la Mayoría es ${sumaMayoria}.
+      </div>
+
+  `;
+
+  if(sumaMayoria > vivos){
+
+    html += `
+      <div class="paso">
+        ${sumaMayoria} supera la cantidad de jugadores vivos.
+      </div>
+    `;
+
+  }else{
+
+    html += `
+      <div class="paso">
+        ${sumaMayoria} es menor o igual a la cantidad de jugadores vivos.
+      </div>
+    `;
+
+  }
+
+  html += `
+      <div class="paso">
+        El daño inicialmente iría hacia la ${dañoBase}.
+      </div>
+  `;
+
+  if(tornado){
+
+    html += `
+      <div class="evento">
+        TORNADO ACTIVADO<br><br>
+        La Minoría altera el resultado.
+      </div>
+    `;
+  }
+
+  if(sumaMayoria === 0){
+
+    html += `
+      <div class="evento">
+        MAREA ACTIVADA<br><br>
+        La Minoría recupera 2 HP.
+      </div>
+    `;
+  }
+
+  html += `
+
+    </div>
+
+    <div class="bloque">
+      <h2>RESULTADO FINAL</h2>
+      <p class="highlight">
+        La ${dañoFinal} recibe ${sumaMayoria} de daño.
+      </p>
+    </div>
+
+  `;
+
+  document.getElementById("resultado").innerHTML = html;
+
+}
+
+</script>
+
+</body>
+</html>
