@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
@@ -90,16 +92,32 @@ h1{
 
 .controls{
   text-align:center;
-  margin-bottom:60px;
+  margin-bottom:35px;
 }
 
 select{
-  background:transparent;
-  border:1px solid rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.12);
   color:white;
   padding:12px 18px;
   font-size:14px;
   letter-spacing:1px;
+  transition:0.3s;
+  cursor:pointer;
+}
+
+select:hover{
+  border-color:#7ee7ff;
+  box-shadow:
+    0 0 12px rgba(126,231,255,0.35);
+  color:#dffaff;
+}
+
+select:focus{
+  outline:none;
+  border-color:#7ee7ff;
+  box-shadow:
+    0 0 18px rgba(126,231,255,0.45);
 }
 
 .players{
@@ -118,7 +136,9 @@ select{
 }
 
 .player-card:hover{
-  border-color:rgba(255,255,255,0.25);
+  border-color:#7ee7ff55;
+  box-shadow:
+    0 0 25px rgba(126,231,255,0.08);
   transform:translateY(-2px);
 }
 
@@ -159,8 +179,10 @@ button{
 }
 
 button:hover{
-  background:white;
+  background:#7ee7ff;
   color:black;
+  box-shadow:
+    0 0 30px rgba(126,231,255,0.35);
 }
 
 .resultado{
@@ -190,9 +212,11 @@ button:hover{
 .evento{
   margin-top:15px;
   padding:18px;
-  border:1px solid rgba(255,255,255,0.1);
-  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(126,231,255,0.15);
+  background:rgba(126,231,255,0.05);
   letter-spacing:1px;
+  box-shadow:
+    0 0 25px rgba(126,231,255,0.08);
 }
 
 .paso{
@@ -214,6 +238,7 @@ button:hover{
 }
 
 </style>
+
 </head>
 
 <body>
@@ -246,6 +271,15 @@ button:hover{
 
   </div>
 
+  <div class="controls" style="margin-top:-10px; margin-bottom:50px;">
+
+    <select id="amuleto">
+      <option value="Algas">Amuleto → Algas</option>
+      <option value="Corales">Amuleto → Corales</option>
+    </select>
+
+  </div>
+
   <div class="players" id="playersContainer"></div>
 
   <button onclick="calcular()">
@@ -267,11 +301,12 @@ function crearJugadores(){
 
   const cantidad = parseInt(cantidadJugadores.value);
 
-  const maxNumero = cantidad <= 4 ? 4 : 5;
+  const maxNumero = 5;
 
   for(let i=1; i<=cantidad; i++){
 
     const card = document.createElement("div");
+
     card.className = "player-card";
 
     card.innerHTML = `
@@ -282,6 +317,7 @@ function crearJugadores(){
 
       <div class="field">
         <label>EQUIPO</label>
+
         <select class="equipo">
           <option value="Algas">Algas</option>
           <option value="Corales">Corales</option>
@@ -290,6 +326,7 @@ function crearJugadores(){
 
       <div class="field">
         <label>SIGNO</label>
+
         <select class="signo">
           <option value="+">+</option>
           <option value="-">-</option>
@@ -298,13 +335,19 @@ function crearJugadores(){
 
       <div class="field">
         <label>VALOR</label>
+
         <select class="valor">
+
           ${Array.from({length:maxNumero}, (_,k)=>`
+
             <option value="${k+1}">
               ${k+1}
             </option>
+
           `).join("")}
+
         </select>
+
       </div>
 
     `;
@@ -328,14 +371,19 @@ function calcular(){
   cards.forEach(card=>{
 
     const equipo = card.querySelector(".equipo").value;
+
     const signo = card.querySelector(".signo").value;
+
     const valor = parseInt(card.querySelector(".valor").value);
 
     jugadores.push({
+
       equipo,
       signo,
       valor,
+
       aporte: signo === "+" ? valor : -valor
+
     });
 
   });
@@ -343,6 +391,7 @@ function calcular(){
   const vivos = jugadores.length;
 
   const algas = jugadores.filter(j=>j.equipo==="Algas");
+
   const corales = jugadores.filter(j=>j.equipo==="Corales");
 
   if(algas.length === 0 || corales.length === 0){
@@ -351,6 +400,7 @@ function calcular(){
 
       <div class="bloque">
         <h2>RESULTADO</h2>
+
         <p class="highlight">
           Todos eligieron el mismo equipo.
         </p>
@@ -366,10 +416,15 @@ function calcular(){
 
   }
 
+  const amuleto = document.getElementById("amuleto").value;
+
   let mayoria;
   let minoria;
 
-  if(algas.length > corales.length){
+  if(
+    algas.length > corales.length ||
+    (algas.length === corales.length && amuleto === "Algas")
+  ){
 
     mayoria = {
       nombre:"Algas",
@@ -395,10 +450,14 @@ function calcular(){
 
   }
 
-  const sumaMayoriaReal = mayoria.jugadores.reduce((a,b)=>a+b.aporte,0);
-  const sumaMinoriaReal = minoria.jugadores.reduce((a,b)=>a+b.aporte,0);
+  const sumaMayoriaReal =
+    mayoria.jugadores.reduce((a,b)=>a+b.aporte,0);
+
+  const sumaMinoriaReal =
+    minoria.jugadores.reduce((a,b)=>a+b.aporte,0);
 
   const sumaMayoria = Math.abs(sumaMayoriaReal);
+
   const sumaMinoria = Math.abs(sumaMinoriaReal);
 
   let dañoBase;
@@ -421,7 +480,8 @@ function calcular(){
 
     tornado = true;
 
-    dañoFinal = dañoBase === "Mayoría"
+    dañoFinal =
+      dañoBase === "Mayoría"
       ? "Minoría"
       : "Mayoría";
 
@@ -430,34 +490,49 @@ function calcular(){
   let html = `
 
     <div class="bloque">
+
       <h2>MAYORÍA</h2>
+
       <p>
-        ${mayoria.nombre} — ${mayoria.jugadores.length} jugadores
+        ${mayoria.nombre}
+        — ${mayoria.jugadores.length} jugadores
       </p>
+
     </div>
 
     <div class="bloque">
+
       <h2>MINORÍA</h2>
+
       <p>
-        ${minoria.nombre} — ${minoria.jugadores.length} jugadores
+        ${minoria.nombre}
+        — ${minoria.jugadores.length} jugadores
       </p>
+
     </div>
 
     <div class="bloque">
+
       <h2>SUMA MAYORÍA</h2>
+
       <p class="highlight">
         ${sumaMayoriaReal}
       </p>
+
     </div>
 
     <div class="bloque">
+
       <h2>SUMA MINORÍA</h2>
+
       <p class="highlight">
         ${sumaMinoriaReal}
       </p>
+
     </div>
 
     <div class="bloque">
+
       <h2>ANÁLISIS</h2>
 
       <div class="paso">
@@ -473,45 +548,67 @@ function calcular(){
   if(sumaMayoria > vivos){
 
     html += `
+
       <div class="paso">
-        ${sumaMayoria} supera la cantidad de jugadores vivos.
+        ${sumaMayoria}
+        supera la cantidad de jugadores vivos.
       </div>
+
     `;
 
   }else{
 
     html += `
+
       <div class="paso">
-        ${sumaMayoria} es menor o igual a la cantidad de jugadores vivos.
+        ${sumaMayoria}
+        es menor o igual a la cantidad de jugadores vivos.
       </div>
+
     `;
 
   }
 
   html += `
+
       <div class="paso">
         El daño inicialmente iría hacia la ${dañoBase}.
       </div>
+
   `;
 
   if(tornado){
 
     html += `
+
       <div class="evento">
-        TORNADO ACTIVADO<br><br>
+
+        TORNADO ACTIVADO
+        <br><br>
+
         La Minoría altera el resultado.
+
       </div>
+
     `;
+
   }
 
   if(sumaMayoria === 0){
 
     html += `
+
       <div class="evento">
-        MAREA ACTIVADA<br><br>
+
+        MAREA ACTIVADA
+        <br><br>
+
         La Minoría recupera 2 HP.
+
       </div>
+
     `;
+
   }
 
   html += `
@@ -519,10 +616,14 @@ function calcular(){
     </div>
 
     <div class="bloque">
+
       <h2>RESULTADO FINAL</h2>
+
       <p class="highlight">
-        La ${dañoFinal} recibe ${sumaMayoria} de daño.
+        La ${dañoFinal}
+        recibe ${sumaMayoria} de daño.
       </p>
+
     </div>
 
   `;
@@ -530,6 +631,62 @@ function calcular(){
   document.getElementById("resultado").innerHTML = html;
 
 }
+
+/* Partículas */
+
+document.addEventListener("click", function(e){
+
+  const particle = document.createElement("div");
+
+  particle.style.position = "fixed";
+
+  particle.style.left = e.clientX + "px";
+
+  particle.style.top = e.clientY + "px";
+
+  particle.style.width = "6px";
+
+  particle.style.height = "6px";
+
+  particle.style.borderRadius = "50%";
+
+  particle.style.background = "#7ee7ff";
+
+  particle.style.pointerEvents = "none";
+
+  particle.style.opacity = "1";
+
+  particle.style.zIndex = "9999";
+
+  particle.style.boxShadow =
+    "0 0 12px rgba(126,231,255,0.9)";
+
+  document.body.appendChild(particle);
+
+  particle.animate([
+
+    {
+      transform:"translate(-50%, -50%) scale(1)",
+      opacity:1
+    },
+
+    {
+      transform:"translate(-50%, -80px) scale(0)",
+      opacity:0
+    }
+
+  ],{
+
+    duration:900,
+    easing:"ease-out"
+
+  });
+
+  setTimeout(()=>{
+    particle.remove();
+  },900);
+
+});
 
 </script>
 
