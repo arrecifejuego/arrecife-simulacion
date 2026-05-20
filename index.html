@@ -148,16 +148,16 @@ body{
   width:180px;
   height:70px;
 
-  border:1px solid rgba(126,231,255,0.12);
+  border:1px solid rgba(126,231,255,0.18);
 
   border-radius:50%;
 
   top:18%;
   left:-250px;
 
-  opacity:0.08;
+  opacity:0.18;
 
-  filter:blur(0.5px);
+  filter:blur(0px);
 
   animation:swim1 40s linear infinite;
 
@@ -175,7 +175,7 @@ body{
   width:45px;
   height:30px;
 
-  border:1px solid rgba(126,231,255,0.12);
+  border:1px solid rgba(126,231,255,0.18);
 
   clip-path:polygon(0 50%,100% 0,100% 100%);
 
@@ -190,16 +190,16 @@ body{
   width:420px;
   height:120px;
 
-  border:1px solid rgba(126,231,255,0.08);
+  border:1px solid rgba(126,231,255,0.14);
 
   border-radius:50%;
 
   top:65%;
   right:-500px;
 
-  opacity:0.06;
+  opacity:0.14;
 
-  filter:blur(1px);
+  filter:blur(0px);
 
   animation:swim2 85s linear infinite;
 
@@ -217,7 +217,7 @@ body{
   width:70px;
   height:40px;
 
-  border:1px solid rgba(126,231,255,0.08);
+  border:1px solid rgba(126,231,255,0.14);
 
   clip-path:polygon(100% 50%,0 0,0 100%);
 
@@ -232,7 +232,7 @@ body{
   width:240px;
   height:240px;
 
-  border:1px solid rgba(126,231,255,0.08);
+  border:1px solid rgba(126,231,255,0.12);
 
   border-radius:40%;
 
@@ -241,7 +241,9 @@ body{
   top:40%;
   left:-350px;
 
-  opacity:0.05;
+  opacity:0.12;
+
+  filter:blur(0px);
 
   animation:swim3 65s linear infinite;
 
@@ -633,8 +635,6 @@ button:hover{
 
 <body>
 
-<!-- Fondo -->
-
 <div class="ocean">
 
   <div class="wave"></div>
@@ -652,8 +652,6 @@ button:hover{
   <div class="creature3"></div>
 
 </div>
-
-<!-- Contenido -->
 
 <div class="container">
 
@@ -704,9 +702,7 @@ button:hover{
 
 <script>
 
-/* =========================
-   PARTICULAS
-========================= */
+/* PARTICULAS */
 
 const particlesContainer =
 document.getElementById("particles");
@@ -731,9 +727,7 @@ for(let i=0;i<45;i++){
 
 }
 
-/* =========================
-   JUGADORES
-========================= */
+/* JUGADORES */
 
 const playersContainer =
 document.getElementById("playersContainer");
@@ -747,8 +741,6 @@ function crearJugadores(){
 
   const cantidad =
     parseInt(cantidadJugadores.value);
-
-  const maxNumero = 5;
 
   for(let i=1; i<=cantidad; i++){
 
@@ -785,7 +777,7 @@ function crearJugadores(){
 
         <select class="valor">
 
-          ${Array.from({length:maxNumero}, (_,k)=>`
+          ${Array.from({length:5}, (_,k)=>`
 
             <option value="${k+1}">
               ${k+1}
@@ -812,9 +804,7 @@ cantidadJugadores.addEventListener(
 
 crearJugadores();
 
-/* =========================
-   CALCULO
-========================= */
+/* CALCULO */
 
 function calcular(){
 
@@ -929,21 +919,80 @@ function calcular(){
   const sumaMinoria =
     Math.abs(sumaMinoriaReal);
 
-  let dañoBase = null;
-
   /* MAREA */
 
-  if(sumaMayoria !== 0){
+  if(sumaMayoria === 0){
 
-    if(sumaMayoria > vivos){
+    document.getElementById("resultado").innerHTML = `
 
-      dañoBase = "Mayoría";
+      <div class="bloque">
 
-    }else{
+        <h2>MAYORÍA</h2>
 
-      dañoBase = "Minoría";
+        <p>
+          ${mayoria.nombre}
+          — ${mayoria.jugadores.length} jugadores
+        </p>
 
-    }
+      </div>
+
+      <div class="bloque">
+
+        <h2>MINORÍA</h2>
+
+        <p>
+          ${minoria.nombre}
+          — ${minoria.jugadores.length} jugadores
+        </p>
+
+      </div>
+
+      <div class="bloque">
+
+        <h2>SUMA MAYORÍA</h2>
+
+        <p class="highlight">
+          ${sumaMayoriaReal}
+        </p>
+
+      </div>
+
+      <div class="evento">
+
+        MAREA ACTIVADA
+        <br><br>
+
+        La Minoría recupera 2 HP.
+
+      </div>
+
+      <div class="bloque">
+
+        <h2>RESULTADO FINAL</h2>
+
+        <p class="highlight">
+          La Minoría recupera 2 HP.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+  /* DAÑO NORMAL */
+
+  let dañoBase;
+
+  if(sumaMayoria > vivos){
+
+    dañoBase = "Mayoría";
+
+  }else{
+
+    dañoBase = "Minoría";
 
   }
 
@@ -951,12 +1000,7 @@ function calcular(){
 
   let dañoFinal = dañoBase;
 
-  /* Tornado solo existe si NO hay marea */
-
-  if(
-    sumaMayoria !== 0 &&
-    sumaMinoria > sumaMayoria
-  ){
+  if(sumaMinoria > sumaMayoria){
 
     tornado = true;
 
@@ -1023,43 +1067,11 @@ function calcular(){
         La suma de la Mayoría es ${sumaMayoria}.
       </div>
 
-  `;
-
-  if(sumaMayoria > vivos){
-
-    html += `
-
-      <div class="paso">
-        ${sumaMayoria}
-        supera la cantidad de jugadores vivos.
-      </div>
-
-    `;
-
-  }else{
-
-    html += `
-
-      <div class="paso">
-        ${sumaMayoria}
-        es menor o igual a la cantidad de jugadores vivos.
-      </div>
-
-    `;
-
-  }
-
-  if(sumaMayoria !== 0){
-
-    html += `
-
       <div class="paso">
         El daño inicialmente iría hacia la ${dañoBase}.
       </div>
 
-    `;
-
-  }
+  `;
 
   if(tornado){
 
@@ -1078,48 +1090,9 @@ function calcular(){
 
   }
 
-  if(sumaMayoria === 0){
-
-    html += `
-
-      <div class="evento">
-
-        MAREA ACTIVADA
-        <br><br>
-
-        La Minoría recupera 2 HP.
-
-      </div>
-
-    `;
-
-  }
-
- html += `
-
-  </div>
-
-`;
-
-if(sumaMayoria === 0){
-
   html += `
-
-    <div class="bloque">
-
-      <h2>RESULTADO FINAL</h2>
-
-      <p class="highlight">
-        La Minoría recupera 2 HP.
-      </p>
 
     </div>
-
-  `;
-
-}else{
-
-  html += `
 
     <div class="bloque">
 
@@ -1134,16 +1107,12 @@ if(sumaMayoria === 0){
 
   `;
 
-}
-
   document.getElementById("resultado").innerHTML =
     html;
 
 }
 
-/* =========================
-   PARTICULAS CLICK
-========================= */
+/* PARTICULAS CLICK */
 
 function createParticle(x,y){
 
