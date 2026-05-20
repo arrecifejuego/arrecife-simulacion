@@ -1034,9 +1034,31 @@ function calcular(){
 
   }
 
+ html += `
+
+  </div>
+
+`;
+
+if(sumaMayoria === 0){
+
   html += `
 
+    <div class="bloque">
+
+      <h2>RESULTADO FINAL</h2>
+
+      <p class="highlight">
+        La Minoría recupera 2 HP.
+      </p>
+
     </div>
+
+  `;
+
+}else{
+
+  html += `
 
     <div class="bloque">
 
@@ -1050,6 +1072,8 @@ function calcular(){
     </div>
 
   `;
+
+}
 
   document.getElementById("resultado").innerHTML =
     html;
