@@ -16,6 +16,11 @@
   box-sizing:border-box;
 }
 
+html,body{
+  width:100%;
+  min-height:100%;
+}
+
 body{
   background:#000;
   color:white;
@@ -26,37 +31,92 @@ body{
   position:relative;
 }
 
-/* Fondo */
+/* =========================
+   FONDO VIVO
+========================= */
 
-body::before{
-  content:"";
+.ocean{
   position:fixed;
   inset:0;
+  overflow:hidden;
+  z-index:0;
+  pointer-events:none;
+}
+
+.wave{
+  position:absolute;
+  width:200%;
+  height:200%;
+  left:-50%;
+  top:-50%;
   background:
-    radial-gradient(circle at center, rgba(255,255,255,0.04), transparent 60%);
-  pointer-events:none;
+    radial-gradient(circle at center,
+    rgba(126,231,255,0.04),
+    transparent 60%);
+  animation:rotateWave 45s linear infinite;
 }
 
-body::after{
-  content:"";
+.wave2{
+  animation-duration:70s;
+  opacity:0.6;
+  transform:scale(1.2);
+}
+
+.wave3{
+  animation-duration:100s;
+  opacity:0.3;
+  transform:scale(1.4);
+}
+
+@keyframes rotateWave{
+
+  from{
+    transform:rotate(0deg);
+  }
+
+  to{
+    transform:rotate(360deg);
+  }
+
+}
+
+.particles{
+
   position:fixed;
   inset:0;
-  background-image:
-    radial-gradient(white 1px, transparent 1px);
-  background-size:120px 120px;
-  opacity:0.03;
-  animation:float 35s linear infinite;
+  z-index:0;
   pointer-events:none;
+  overflow:hidden;
+
 }
 
-@keyframes float{
-  from{
-    transform:translateY(0px);
-  }
-  to{
-    transform:translateY(-120px);
-  }
+.particles span{
+
+  position:absolute;
+  width:2px;
+  height:2px;
+  background:white;
+  opacity:0.08;
+  border-radius:50%;
+  animation:floatParticle linear infinite;
+
 }
+
+@keyframes floatParticle{
+
+  from{
+    transform:translateY(100vh);
+  }
+
+  to{
+    transform:translateY(-120vh);
+  }
+
+}
+
+/* =========================
+   CONTENIDO
+========================= */
 
 .container{
   max-width:1200px;
@@ -95,30 +155,63 @@ h1{
   margin-bottom:35px;
 }
 
+/* =========================
+   SELECTS
+========================= */
+
 select{
+
   background:rgba(255,255,255,0.03);
   border:1px solid rgba(255,255,255,0.12);
+
   color:white;
+
   padding:12px 18px;
+
   font-size:14px;
+
   letter-spacing:1px;
+
   transition:0.3s;
+
   cursor:pointer;
+
+  border-radius:2px;
+
+}
+
+select option{
+
+  background:#050505;
+  color:white;
+
 }
 
 select:hover{
+
   border-color:#7ee7ff;
+
   box-shadow:
     0 0 12px rgba(126,231,255,0.35);
+
   color:#dffaff;
+
 }
 
 select:focus{
+
   outline:none;
+
   border-color:#7ee7ff;
+
   box-shadow:
     0 0 18px rgba(126,231,255,0.45);
+
 }
+
+/* =========================
+   PLAYERS
+========================= */
 
 .players{
   display:grid;
@@ -128,25 +221,72 @@ select:focus{
 }
 
 .player-card{
+
   border:1px solid rgba(255,255,255,0.08);
+
   padding:25px;
+
   background:rgba(255,255,255,0.02);
+
   backdrop-filter:blur(5px);
+
   transition:0.3s;
+
+  position:relative;
+
+  overflow:hidden;
+
+}
+
+.player-card::before{
+
+  content:"";
+
+  position:absolute;
+
+  inset:0;
+
+  background:
+    linear-gradient(
+      120deg,
+      transparent,
+      rgba(126,231,255,0.03),
+      transparent
+    );
+
+  transform:translateX(-100%);
+
+  transition:1.2s;
+
+}
+
+.player-card:hover::before{
+
+  transform:translateX(100%);
+
 }
 
 .player-card:hover{
+
   border-color:#7ee7ff55;
+
   box-shadow:
     0 0 25px rgba(126,231,255,0.08);
+
   transform:translateY(-2px);
+
 }
 
 .player-title{
+
   margin-bottom:25px;
+
   letter-spacing:3px;
+
   font-size:12px;
+
   opacity:0.6;
+
 }
 
 .field{
@@ -154,42 +294,76 @@ select:focus{
 }
 
 .field label{
+
   display:block;
+
   margin-bottom:8px;
+
   font-size:11px;
+
   letter-spacing:2px;
+
   opacity:0.4;
+
 }
 
 .field select{
   width:100%;
 }
 
+/* =========================
+   BOTON
+========================= */
+
 button{
+
   display:block;
+
   margin:0 auto 70px;
+
   background:transparent;
+
   border:1px solid rgba(255,255,255,0.25);
+
   color:white;
+
   padding:16px 45px;
+
   letter-spacing:3px;
+
   cursor:pointer;
+
   transition:0.3s;
+
   font-size:12px;
+
 }
 
 button:hover{
+
   background:#7ee7ff;
+
   color:black;
+
   box-shadow:
     0 0 30px rgba(126,231,255,0.35);
+
 }
 
+/* =========================
+   RESULTADOS
+========================= */
+
 .resultado{
+
   border-top:1px solid rgba(255,255,255,0.1);
+
   padding-top:60px;
+
   max-width:800px;
+
   margin:auto;
+
 }
 
 .bloque{
@@ -197,32 +371,52 @@ button:hover{
 }
 
 .bloque h2{
+
   font-weight:normal;
+
   font-size:13px;
+
   letter-spacing:4px;
+
   opacity:0.5;
+
   margin-bottom:15px;
+
 }
 
 .bloque p{
+
   font-size:20px;
+
   line-height:1.8;
+
 }
 
 .evento{
+
   margin-top:15px;
+
   padding:18px;
+
   border:1px solid rgba(126,231,255,0.15);
+
   background:rgba(126,231,255,0.05);
+
   letter-spacing:1px;
+
   box-shadow:
     0 0 25px rgba(126,231,255,0.08);
+
 }
 
 .paso{
+
   margin-bottom:18px;
+
   opacity:0.75;
+
   line-height:1.8;
+
 }
 
 .highlight{
@@ -242,6 +436,20 @@ button:hover{
 </head>
 
 <body>
+
+<!-- Fondo -->
+
+<div class="ocean">
+
+  <div class="wave"></div>
+  <div class="wave wave2"></div>
+  <div class="wave wave3"></div>
+
+</div>
+
+<div class="particles" id="particles"></div>
+
+<!-- Contenido -->
 
 <div class="container">
 
@@ -292,14 +500,49 @@ button:hover{
 
 <script>
 
-const playersContainer = document.getElementById("playersContainer");
-const cantidadJugadores = document.getElementById("cantidadJugadores");
+/* =========================
+   PARTICULAS
+========================= */
+
+const particlesContainer =
+document.getElementById("particles");
+
+for(let i=0;i<45;i++){
+
+  const p = document.createElement("span");
+
+  p.style.left =
+    Math.random()*100 + "%";
+
+  p.style.animationDuration =
+    (20 + Math.random()*40) + "s";
+
+  p.style.animationDelay =
+    (-Math.random()*50) + "s";
+
+  p.style.opacity =
+    Math.random()*0.12;
+
+  particlesContainer.appendChild(p);
+
+}
+
+/* =========================
+   JUGADORES
+========================= */
+
+const playersContainer =
+document.getElementById("playersContainer");
+
+const cantidadJugadores =
+document.getElementById("cantidadJugadores");
 
 function crearJugadores(){
 
   playersContainer.innerHTML = "";
 
-  const cantidad = parseInt(cantidadJugadores.value);
+  const cantidad =
+    parseInt(cantidadJugadores.value);
 
   const maxNumero = 5;
 
@@ -358,23 +601,34 @@ function crearJugadores(){
 
 }
 
-cantidadJugadores.addEventListener("change", crearJugadores);
+cantidadJugadores.addEventListener(
+  "change",
+  crearJugadores
+);
 
 crearJugadores();
 
+/* =========================
+   CALCULO
+========================= */
+
 function calcular(){
 
-  const cards = document.querySelectorAll(".player-card");
+  const cards =
+    document.querySelectorAll(".player-card");
 
   const jugadores = [];
 
   cards.forEach(card=>{
 
-    const equipo = card.querySelector(".equipo").value;
+    const equipo =
+      card.querySelector(".equipo").value;
 
-    const signo = card.querySelector(".signo").value;
+    const signo =
+      card.querySelector(".signo").value;
 
-    const valor = parseInt(card.querySelector(".valor").value);
+    const valor =
+      parseInt(card.querySelector(".valor").value);
 
     jugadores.push({
 
@@ -382,7 +636,10 @@ function calcular(){
       signo,
       valor,
 
-      aporte: signo === "+" ? valor : -valor
+      aporte:
+        signo === "+"
+        ? valor
+        : -valor
 
     });
 
@@ -390,9 +647,11 @@ function calcular(){
 
   const vivos = jugadores.length;
 
-  const algas = jugadores.filter(j=>j.equipo==="Algas");
+  const algas =
+    jugadores.filter(j=>j.equipo==="Algas");
 
-  const corales = jugadores.filter(j=>j.equipo==="Corales");
+  const corales =
+    jugadores.filter(j=>j.equipo==="Corales");
 
   if(algas.length === 0 || corales.length === 0){
 
@@ -416,14 +675,16 @@ function calcular(){
 
   }
 
-  const amuleto = document.getElementById("amuleto").value;
+  const amuleto =
+    document.getElementById("amuleto").value;
 
   let mayoria;
   let minoria;
 
   if(
     algas.length > corales.length ||
-    (algas.length === corales.length && amuleto === "Algas")
+    (algas.length === corales.length &&
+    amuleto === "Algas")
   ){
 
     mayoria = {
@@ -451,14 +712,18 @@ function calcular(){
   }
 
   const sumaMayoriaReal =
-    mayoria.jugadores.reduce((a,b)=>a+b.aporte,0);
+    mayoria.jugadores
+    .reduce((a,b)=>a+b.aporte,0);
 
   const sumaMinoriaReal =
-    minoria.jugadores.reduce((a,b)=>a+b.aporte,0);
+    minoria.jugadores
+    .reduce((a,b)=>a+b.aporte,0);
 
-  const sumaMayoria = Math.abs(sumaMayoriaReal);
+  const sumaMayoria =
+    Math.abs(sumaMayoriaReal);
 
-  const sumaMinoria = Math.abs(sumaMinoriaReal);
+  const sumaMinoria =
+    Math.abs(sumaMinoriaReal);
 
   let dañoBase;
 
@@ -628,21 +893,25 @@ function calcular(){
 
   `;
 
-  document.getElementById("resultado").innerHTML = html;
+  document.getElementById("resultado").innerHTML =
+    html;
 
 }
 
-/* Partículas */
+/* =========================
+   PARTICULAS CLICK
+========================= */
 
-document.addEventListener("click", function(e){
+function createParticle(x,y){
 
-  const particle = document.createElement("div");
+  const particle =
+    document.createElement("div");
 
   particle.style.position = "fixed";
 
-  particle.style.left = e.clientX + "px";
+  particle.style.left = x + "px";
 
-  particle.style.top = e.clientY + "px";
+  particle.style.top = y + "px";
 
   particle.style.width = "6px";
 
@@ -686,7 +955,27 @@ document.addEventListener("click", function(e){
     particle.remove();
   },900);
 
+}
+
+document.addEventListener("click", e=>{
+
+  createParticle(
+    e.clientX,
+    e.clientY
+  );
+
 });
+
+document.addEventListener("touchstart", e=>{
+
+  const t = e.touches[0];
+
+  createParticle(
+    t.clientX,
+    t.clientY
+  );
+
+},{ passive:true });
 
 </script>
 
