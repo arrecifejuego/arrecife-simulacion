@@ -32,7 +32,7 @@ body{
 }
 
 /* =========================
-   FONDO VIVO
+   OCEANO
 ========================= */
 
 .ocean{
@@ -49,22 +49,26 @@ body{
   height:200%;
   left:-50%;
   top:-50%;
+
   background:
-    radial-gradient(circle at center,
-    rgba(126,231,255,0.04),
-    transparent 60%);
+    radial-gradient(
+      circle at center,
+      rgba(126,231,255,0.04),
+      transparent 60%
+    );
+
   animation:rotateWave 45s linear infinite;
 }
 
 .wave2{
   animation-duration:70s;
-  opacity:0.6;
+  opacity:0.5;
   transform:scale(1.2);
 }
 
 .wave3{
   animation-duration:100s;
-  opacity:0.3;
+  opacity:0.25;
   transform:scale(1.4);
 }
 
@@ -80,24 +84,31 @@ body{
 
 }
 
-.particles{
+/* =========================
+   PARTICULAS
+========================= */
 
+.particles{
   position:fixed;
   inset:0;
   z-index:0;
   pointer-events:none;
   overflow:hidden;
-
 }
 
 .particles span{
 
   position:absolute;
+
   width:2px;
   height:2px;
+
   background:white;
-  opacity:0.08;
+
   border-radius:50%;
+
+  opacity:0.08;
+
   animation:floatParticle linear infinite;
 
 }
@@ -110,6 +121,130 @@ body{
 
   to{
     transform:translateY(-120vh);
+  }
+
+}
+
+/* =========================
+   CRIATURAS
+========================= */
+
+.deep-sea{
+
+  position:fixed;
+
+  inset:0;
+
+  overflow:hidden;
+
+  pointer-events:none;
+
+  z-index:0;
+
+}
+
+.creature{
+
+  position:absolute;
+
+  border:1px solid rgba(126,231,255,0.05);
+
+  opacity:0.08;
+
+  filter:blur(1px);
+
+}
+
+.creature1{
+
+  width:500px;
+  height:160px;
+
+  border-radius:50%;
+
+  left:-600px;
+  top:20%;
+
+  animation:swim1 55s linear infinite;
+
+}
+
+.creature2{
+
+  width:300px;
+  height:300px;
+
+  border-radius:35%;
+
+  right:-400px;
+  top:65%;
+
+  transform:rotate(45deg);
+
+  animation:swim2 80s linear infinite;
+
+}
+
+.creature3{
+
+  width:700px;
+  height:120px;
+
+  border-radius:50%;
+
+  left:-800px;
+  top:75%;
+
+  animation:swim3 95s linear infinite;
+
+}
+
+@keyframes swim1{
+
+  from{
+    transform:
+      translateX(0)
+      translateY(0)
+      rotate(0deg);
+  }
+
+  to{
+    transform:
+      translateX(2200px)
+      translateY(40px)
+      rotate(6deg);
+  }
+
+}
+
+@keyframes swim2{
+
+  from{
+    transform:
+      translateX(0)
+      rotate(45deg);
+  }
+
+  to{
+    transform:
+      translateX(-2200px)
+      rotate(80deg);
+  }
+
+}
+
+@keyframes swim3{
+
+  from{
+    transform:
+      translateX(0)
+      translateY(0);
+  }
+
+  to{
+    transform:
+      translateX(2600px)
+      translateY(-60px);
   }
 
 }
@@ -161,7 +296,12 @@ h1{
 
 select{
 
-  background:rgba(255,255,255,0.03);
+  appearance:none;
+  -webkit-appearance:none;
+  -moz-appearance:none;
+
+  background:#050505;
+
   border:1px solid rgba(255,255,255,0.12);
 
   color:white;
@@ -182,8 +322,8 @@ select{
 
 select option{
 
-  background:#050505;
-  color:white;
+  background:#050505 !important;
+  color:white !important;
 
 }
 
@@ -214,10 +354,16 @@ select:focus{
 ========================= */
 
 .players{
+
   display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+
   gap:25px;
+
   margin-bottom:60px;
+
 }
 
 .player-card{
@@ -423,6 +569,10 @@ button:hover{
   font-size:28px;
 }
 
+/* =========================
+   MOBILE
+========================= */
+
 @media(max-width:700px){
 
   h1{
@@ -448,6 +598,14 @@ button:hover{
 </div>
 
 <div class="particles" id="particles"></div>
+
+<div class="deep-sea">
+
+  <div class="creature creature1"></div>
+  <div class="creature creature2"></div>
+  <div class="creature creature3"></div>
+
+</div>
 
 <!-- Contenido -->
 
