@@ -144,27 +144,42 @@ body{
   position:absolute;
 
   border:
-    1px solid rgba(126,231,255,0.22);
+    1px solid rgba(126,231,255,0.35);
 
-  opacity:0.22;
+  opacity:0.32;
 
-  filter:blur(0.5px);
+  filter:blur(0.3px);
 
   box-shadow:
-    0 0 18px rgba(126,231,255,0.12),
-    0 0 45px rgba(126,231,255,0.06);
+    0 0 25px rgba(126,231,255,0.18),
+    0 0 60px rgba(126,231,255,0.08);
+
+}
+
+.creature::after{
+
+  content:"";
+
+  position:absolute;
+
+  inset:-20px;
+
+  border:
+    1px solid rgba(126,231,255,0.05);
+
+  border-radius:inherit;
 
 }
 
 .creature1{
 
-  width:500px;
-  height:160px;
+  width:520px;
+  height:170px;
 
   border-radius:50%;
 
-  left:-600px;
-  top:20%;
+  left:-650px;
+  top:18%;
 
   animation:swim1 55s linear infinite;
 
@@ -172,13 +187,13 @@ body{
 
 .creature2{
 
-  width:300px;
-  height:300px;
+  width:320px;
+  height:320px;
 
   border-radius:35%;
 
-  right:-400px;
-  top:65%;
+  right:-420px;
+  top:62%;
 
   transform:rotate(45deg);
 
@@ -188,13 +203,13 @@ body{
 
 .creature3{
 
-  width:700px;
-  height:120px;
+  width:720px;
+  height:130px;
 
   border-radius:50%;
 
-  left:-800px;
-  top:75%;
+  left:-850px;
+  top:78%;
 
   animation:swim3 95s linear infinite;
 
@@ -211,7 +226,7 @@ body{
 
   to{
     transform:
-      translateX(2200px)
+      translateX(2400px)
       translateY(40px)
       rotate(6deg);
   }
@@ -228,7 +243,7 @@ body{
 
   to{
     transform:
-      translateX(-2200px)
+      translateX(-2400px)
       rotate(80deg);
   }
 
@@ -244,7 +259,7 @@ body{
 
   to{
     transform:
-      translateX(2600px)
+      translateX(2800px)
       translateY(-60px);
   }
 
@@ -541,11 +556,11 @@ button:hover{
 
 .evento{
 
-  margin-top:22px;
+  margin-top:25px;
 
-  margin-bottom:40px;
+  margin-bottom:55px;
 
-  padding:18px;
+  padding:20px;
 
   border:1px solid rgba(126,231,255,0.18);
 
@@ -662,6 +677,75 @@ button:hover{
 <script>
 
 /* =========================
+   AUDIO
+========================= */
+
+const audioCtx =
+  new (window.AudioContext ||
+  window.webkitAudioContext)();
+
+function playTone(freq,duration,type,volume){
+
+  const osc =
+    audioCtx.createOscillator();
+
+  const gain =
+    audioCtx.createGain();
+
+  osc.type = type;
+  osc.frequency.value = freq;
+
+  gain.gain.value = volume;
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start();
+
+  gain.gain.exponentialRampToValueAtTime(
+    0.0001,
+    audioCtx.currentTime + duration
+  );
+
+  osc.stop(
+    audioCtx.currentTime + duration
+  );
+
+}
+
+function sonidoHover(){
+
+  playTone(240,0.08,"sine",0.01);
+
+}
+
+function sonidoClick(){
+
+  playTone(420,0.12,"sine",0.03);
+
+}
+
+function sonidoTornado(){
+
+  playTone(120,0.4,"sawtooth",0.02);
+
+  setTimeout(()=>{
+    playTone(80,0.5,"triangle",0.015);
+  },100);
+
+}
+
+function sonidoMarea(){
+
+  playTone(520,0.7,"sine",0.02);
+
+  setTimeout(()=>{
+    playTone(720,1,"sine",0.01);
+  },150);
+
+}
+
+/* =========================
    PARTICULAS
 ========================= */
 
@@ -687,6 +771,33 @@ for(let i=0;i<45;i++){
   particlesContainer.appendChild(p);
 
 }
+
+/* =========================
+   SONIDOS UI
+========================= */
+
+document.querySelectorAll("select").forEach(el=>{
+
+  el.addEventListener("mouseenter",()=>{
+
+    sonidoHover();
+
+  });
+
+  el.addEventListener("change",()=>{
+
+    sonidoClick();
+
+  });
+
+});
+
+document.querySelector("button")
+.addEventListener("mouseenter",()=>{
+
+  sonidoHover();
+
+});
 
 /* =========================
    JUGADORES
@@ -774,6 +885,8 @@ crearJugadores();
 ========================= */
 
 function calcular(){
+
+  sonidoClick();
 
   const cards =
     document.querySelectorAll(".player-card");
@@ -1009,6 +1122,8 @@ function calcular(){
 
   if(tornado && sumaMayoria !== 0){
 
+    sonidoTornado();
+
     html += `
 
       <div class="evento">
@@ -1025,6 +1140,8 @@ function calcular(){
   }
 
   if(sumaMayoria === 0){
+
+    sonidoMarea();
 
     html += `
 
