@@ -462,11 +462,16 @@ function avanzar(){
   pasoActual++;
   if(pasoActual<pasos.length){
     mostrarPaso(pasoActual);
-    // actualizar botón
     const btn=document.getElementById('btn-siguiente');
     if(btn){
       if(pasoActual===pasos.length-1){
+        // último paso — scroll al paso y esconder botón
+        setTimeout(()=>{ pasos[pasoActual].scrollIntoView({behavior:'smooth',block:'center'}); },100);
         btn.style.display='none';
+      } else {
+        // scroll al nuevo paso, luego al botón
+        setTimeout(()=>{ pasos[pasoActual].scrollIntoView({behavior:'smooth',block:'center'}); },100);
+        setTimeout(()=>{ btn.scrollIntoView({behavior:'smooth',block:'center'}); },450);
       }
     }
   }
@@ -620,10 +625,11 @@ function construirPasos(jugadores, mayoria, minoria, sumaMayoriaReal, sumaMinori
   mostrarPaso(0);
   sonarReveal();
 
-  // scroll suave
+  // scroll suave al botón siguiente para que el usuario lo vea
   setTimeout(()=>{
-    zona.scrollIntoView({behavior:'smooth',block:'start'});
-  },300);
+    const btn=document.getElementById('btn-siguiente');
+    if(btn) btn.scrollIntoView({behavior:'smooth',block:'center'});
+  },500);
 }
 
 /* ============================
