@@ -1,3 +1,6 @@
+bash
+
+cat > /mnt/user-data/outputs/arrecife-simulador.html << 'ENDOFFILE'
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,35 +10,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Tenor+Sans&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --cyan: rgba(100,210,230,1);
-  --cyan-dim: rgba(100,210,230,0.18);
-  --cyan-glow: rgba(100,210,230,0.08);
-  --algas: rgba(80,200,160,1);
-  --algas-dim: rgba(80,200,160,0.15);
-  --corales: rgba(220,120,90,1);
-  --corales-dim: rgba(220,120,90,0.15);
-  --bg: #050a0d;
+  --cyan:rgba(100,210,230,1);--cyan-dim:rgba(100,210,230,0.18);
+  --algas:rgba(80,200,160,1);--algas-dim:rgba(80,200,160,0.15);
+  --corales:rgba(220,120,90,1);--corales-dim:rgba(220,120,90,0.15);
+  --bg:#050a0d;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;min-height:100%;background:var(--bg);color:white;overflow-x:hidden;}
 body{font-family:'Tenor Sans',sans-serif;}
 
-/* FONDO */
+/* CANVAS FONDO */
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* OCEANO */
 .ocean{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none;}
 .wave{position:absolute;width:200%;height:200%;left:-50%;top:-50%;
-  background:radial-gradient(circle at center,rgba(80,180,200,0.04),transparent 60%);
+  background:radial-gradient(circle at center,rgba(80,180,200,0.035),transparent 60%);
   animation:rotateWave 55s linear infinite;}
 .wave2{animation-duration:85s;opacity:0.5;transform:scale(1.25);}
 .wave3{animation-duration:120s;opacity:0.2;transform:scale(1.45);}
 @keyframes rotateWave{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-
-.deep-sea{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
-.creature{position:absolute;border:1px solid rgba(100,200,220,0.1);opacity:0.1;border-radius:50%;filter:blur(0.5px);}
-.creature1{width:520px;height:140px;left:-650px;top:20%;animation:swim1 75s linear infinite;}
-.creature2{width:300px;height:300px;border-radius:35%;right:-380px;top:60%;transform:rotate(45deg);animation:swim2 100s linear infinite;}
-.creature3{width:700px;height:110px;left:-850px;top:75%;animation:swim1 90s linear infinite 8s;opacity:0.06;}
-@keyframes swim1{from{transform:translateX(0) translateY(0) rotate(0deg)}to{transform:translateX(2600px) translateY(40px) rotate(5deg)}}
-@keyframes swim2{from{transform:translateX(0) rotate(45deg)}to{transform:translateX(-2600px) rotate(95deg)}}
 
 /* LAYOUT */
 .container{max-width:1100px;margin:0 auto;padding:60px 24px 100px;position:relative;z-index:2;}
@@ -54,69 +48,52 @@ select{
   appearance:none;-webkit-appearance:none;
   background:rgba(255,255,255,0.03);
   border:1px solid rgba(255,255,255,0.1);
-  color:white;
-  padding:11px 36px 11px 16px;
+  color:white;padding:11px 36px 11px 16px;
   font-family:'Tenor Sans',sans-serif;
   font-size:11px;letter-spacing:2px;
   cursor:pointer;border-radius:2px;
-  transition:border-color 0.3s, box-shadow 0.3s;
+  transition:border-color 0.3s,box-shadow 0.3s;
   text-transform:uppercase;
 }
 select option{background:#0a1520;color:white;}
 select:hover,select:focus{outline:none;border-color:rgba(100,210,230,0.4);box-shadow:0 0 16px rgba(100,210,230,0.08);}
 
 /* GRID JUGADORES */
-.players-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
-  gap:16px;
-  margin-bottom:48px;
-}
+.players-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:16px;margin-bottom:48px;}
 
 /* CARTA JUGADOR */
 .player-card{
   border:1px solid rgba(255,255,255,0.07);
   background:rgba(255,255,255,0.02);
   padding:20px 16px 22px;
-  position:relative;
-  overflow:hidden;
-  transition:border-color 0.4s, box-shadow 0.4s;
+  position:relative;overflow:hidden;
+  transition:border-color 0.4s,box-shadow 0.4s;
   backdrop-filter:blur(4px);
+  cursor:pointer;
 }
 .player-card::before{
-  content:'';position:absolute;
-  top:0;left:0;right:0;height:1px;
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,rgba(100,210,230,0.2),transparent);
   opacity:0;transition:opacity 0.4s;
 }
 .player-card:hover::before{opacity:1;}
 .player-card:hover{border-color:rgba(100,210,230,0.2);box-shadow:0 0 24px rgba(100,210,230,0.05);}
-
-/* equipo color */
 .player-card.team-algas{border-color:rgba(80,200,160,0.25);box-shadow:0 0 20px rgba(80,200,160,0.06);}
 .player-card.team-corales{border-color:rgba(220,120,90,0.25);box-shadow:0 0 20px rgba(220,120,90,0.06);}
-
 .player-num{font-size:9px;letter-spacing:4px;opacity:0.3;margin-bottom:18px;text-transform:uppercase;}
-
 .field{margin-bottom:13px;}
 .field label{display:block;font-size:9px;letter-spacing:2.5px;opacity:0.3;margin-bottom:7px;text-transform:uppercase;}
 .field select{width:100%;padding:9px 28px 9px 10px;font-size:12px;letter-spacing:1px;}
 
-/* CARTA VISUAL (después de revelar) */
+/* CARTA VISUAL */
 .carta-visual{
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  padding:16px 10px;
-  min-height:110px;
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:2px;
-  background:rgba(0,0,0,0.3);
-  position:relative;
-  overflow:hidden;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;padding:16px 10px;min-height:110px;
+  border:1px solid rgba(255,255,255,0.08);border-radius:2px;
+  background:rgba(0,0,0,0.3);position:relative;overflow:hidden;
+  transform:rotateY(90deg);transition:transform 0.5s ease;
 }
+.carta-visual.flipped{transform:rotateY(0deg);}
 .carta-visual.team-algas{border-color:rgba(80,200,160,0.35);background:rgba(80,200,160,0.06);}
 .carta-visual.team-corales{border-color:rgba(220,120,90,0.35);background:rgba(220,120,90,0.06);}
 .carta-equipo{font-size:9px;letter-spacing:3px;opacity:0.5;text-transform:uppercase;}
@@ -126,63 +103,30 @@ select:hover,select:focus{outline:none;border-color:rgba(100,210,230,0.4);box-sh
 
 /* BOTÓN ANALIZAR */
 .btn-analizar{
-  display:block;margin:0 auto 0;
-  background:transparent;
-  border:1px solid rgba(255,255,255,0.2);
-  color:white;
-  padding:14px 48px;
-  font-family:'Tenor Sans',sans-serif;
-  font-size:11px;letter-spacing:4px;
-  cursor:pointer;text-transform:uppercase;
+  display:block;margin:0 auto;
+  background:transparent;border:1px solid rgba(255,255,255,0.2);color:white;
+  padding:14px 48px;font-family:'Tenor Sans',sans-serif;
+  font-size:11px;letter-spacing:4px;cursor:pointer;text-transform:uppercase;
   transition:border-color 0.3s,box-shadow 0.3s,background 0.3s,color 0.3s;
   position:relative;overflow:hidden;
 }
-.btn-analizar::before{
-  content:'';position:absolute;inset:0;
-  background:rgba(100,210,230,0.07);
-  opacity:0;transition:opacity 0.3s;
-}
+.btn-analizar::before{content:'';position:absolute;inset:0;background:rgba(100,210,230,0.07);opacity:0;transition:opacity 0.3s;}
 .btn-analizar:hover::before{opacity:1;}
 .btn-analizar:hover{border-color:rgba(100,210,230,0.45);box-shadow:0 0 28px rgba(100,210,230,0.1);}
 .btn-analizar:active{transform:scale(0.98);}
 
 /* ZONA RESOLUCIÓN */
-#zona-resolucion{
-  margin-top:72px;
-  max-width:720px;
-  margin-left:auto;
-  margin-right:auto;
-}
+#zona-resolucion{margin-top:72px;max-width:720px;margin-left:auto;margin-right:auto;}
 
-/* PASO */
-.paso-bloque{
-  opacity:0;
-  transform:translateY(18px);
-  transition:opacity 0.7s ease, transform 0.7s ease;
-  margin-bottom:0;
-}
+/* PASOS */
+.paso-bloque{opacity:0;transform:translateY(18px);transition:opacity 0.7s ease,transform 0.7s ease;margin-bottom:0;}
 .paso-bloque.visible{opacity:1;transform:translateY(0);}
+.paso-linea{width:1px;height:48px;background:linear-gradient(to bottom,rgba(100,210,230,0.25),transparent);margin:0 auto;}
+.paso-label{font-size:9px;letter-spacing:4px;opacity:0.3;text-align:center;margin-bottom:20px;text-transform:uppercase;}
 
-.paso-linea{
-  width:1px;height:48px;
-  background:linear-gradient(to bottom,rgba(100,210,230,0.25),transparent);
-  margin:0 auto;
-}
-
-/* etiquetas de sección */
-.paso-label{
-  font-size:9px;letter-spacing:4px;opacity:0.3;
-  text-align:center;margin-bottom:20px;text-transform:uppercase;
-}
-
-/* equipos */
+/* EQUIPOS */
 .equipos-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-.equipo-bloque{
-  flex:1;min-width:160px;max-width:260px;
-  border:1px solid rgba(255,255,255,0.08);
-  padding:20px 16px;text-align:center;
-  position:relative;
-}
+.equipo-bloque{flex:1;min-width:160px;max-width:260px;border:1px solid rgba(255,255,255,0.08);padding:20px 16px;text-align:center;position:relative;}
 .equipo-bloque.mayoria{border-color:rgba(100,210,230,0.25);background:rgba(100,210,230,0.04);}
 .equipo-bloque.minoria{border-color:rgba(255,255,255,0.06);background:rgba(255,255,255,0.01);}
 .equipo-tag{font-size:9px;letter-spacing:3px;opacity:0.35;margin-bottom:10px;text-transform:uppercase;}
@@ -190,47 +134,22 @@ select:hover,select:focus{outline:none;border-color:rgba(100,210,230,0.4);box-sh
 .equipo-nombre.algas{color:var(--algas);}
 .equipo-nombre.corales{color:var(--corales);}
 .equipo-count{font-size:11px;opacity:0.35;letter-spacing:1px;}
-.amuleto-badge{
-  position:absolute;top:-10px;left:50%;transform:translateX(-50%);
-  font-size:9px;letter-spacing:2px;padding:3px 10px;
-  background:rgba(255,220,80,0.12);border:1px solid rgba(255,220,80,0.3);
-  color:rgba(255,220,80,0.8);white-space:nowrap;text-transform:uppercase;
-}
+.amuleto-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:2px;padding:3px 10px;background:rgba(255,220,80,0.12);border:1px solid rgba(255,220,80,0.3);color:rgba(255,220,80,0.8);white-space:nowrap;text-transform:uppercase;}
 
-/* sumas */
+/* SUMAS */
 .sumas-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-.suma-bloque{
-  flex:1;min-width:160px;max-width:260px;
-  border:1px solid rgba(255,255,255,0.06);
-  padding:20px 16px;text-align:center;
-  background:rgba(255,255,255,0.01);
-}
+.suma-bloque{flex:1;min-width:160px;max-width:260px;border:1px solid rgba(255,255,255,0.06);padding:20px 16px;text-align:center;background:rgba(255,255,255,0.01);}
 .suma-tag{font-size:9px;letter-spacing:3px;opacity:0.3;margin-bottom:10px;text-transform:uppercase;}
 .suma-val{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;line-height:1;margin-bottom:6px;}
 .suma-abs{font-size:10px;opacity:0.3;letter-spacing:1px;}
 
-/* análisis texto */
-.analisis-texto{
-  font-family:'Cormorant Garamond',serif;
-  font-style:italic;font-size:18px;font-weight:300;
-  line-height:1.9;text-align:center;
-  opacity:0.75;padding:0 16px;
-}
+/* ANÁLISIS */
+.analisis-texto{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;font-weight:300;line-height:1.9;text-align:center;opacity:0.75;padding:0 16px;}
 .analisis-texto span{opacity:0.4;font-size:14px;}
 
-/* evento especial */
-.evento-especial{
-  text-align:center;padding:32px 28px;
-  border:1px solid rgba(100,210,230,0.2);
-  background:rgba(100,210,230,0.04);
-  position:relative;overflow:hidden;
-}
-.evento-especial::before{
-  content:'';position:absolute;
-  top:0;left:-100%;width:100%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(100,210,230,0.06),transparent);
-  animation:shimmer 2.5s ease-in-out infinite;
-}
+/* EVENTOS */
+.evento-especial{text-align:center;padding:32px 28px;border:1px solid rgba(100,210,230,0.2);background:rgba(100,210,230,0.04);position:relative;overflow:hidden;}
+.evento-especial::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(100,210,230,0.06),transparent);animation:shimmer 2.5s ease-in-out infinite;}
 @keyframes shimmer{to{left:100%;}}
 .evento-especial.tornado{border-color:rgba(180,80,80,0.3);background:rgba(180,80,80,0.04);}
 .evento-especial.tornado::before{background:linear-gradient(90deg,transparent,rgba(180,80,80,0.06),transparent);}
@@ -238,54 +157,29 @@ select:hover,select:focus{outline:none;border-color:rgba(100,210,230,0.4);box-sh
 .evento-nombre{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;opacity:0.5;margin-bottom:14px;text-transform:uppercase;}
 .evento-desc{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;font-weight:300;line-height:1.7;}
 
-/* resultado final */
+/* RESULTADO FINAL */
 .resultado-final{text-align:center;padding:36px 28px;}
 .resultado-tag{font-size:9px;letter-spacing:4px;opacity:0.3;margin-bottom:20px;text-transform:uppercase;}
-.resultado-daño{
-  font-family:'Cormorant Garamond',serif;
-  font-size:58px;font-weight:300;line-height:1;
-  margin-bottom:12px;
-  text-shadow:0 0 40px rgba(100,210,230,0.3);
-}
+.resultado-daño{font-family:'Cormorant Garamond',serif;font-size:58px;font-weight:300;line-height:1;margin-bottom:12px;text-shadow:0 0 40px rgba(100,210,230,0.3);}
 .resultado-daño.algas{color:var(--algas);text-shadow:0 0 40px rgba(80,200,160,0.3);}
 .resultado-daño.corales{color:var(--corales);text-shadow:0 0 40px rgba(220,120,90,0.3);}
 .resultado-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;opacity:0.4;letter-spacing:1px;}
+.resultado-recupera{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;line-height:1;margin-bottom:10px;color:rgba(80,180,220,0.9);}
 
-/* reiniciar */
-.resultado-recupera{
-  font-family:'Cormorant Garamond',serif;
-  font-size:42px;font-weight:300;line-height:1;
-  margin-bottom:10px;color:rgba(80,180,220,0.9);
-}
-
-/* BOTÓN SIGUIENTE PASO */
+/* BOTÓN SIGUIENTE */
 .btn-siguiente{
   display:block;margin:40px auto 0;
-  background:transparent;
-  border:1px solid rgba(255,255,255,0.12);
-  color:rgba(255,255,255,0.5);
-  padding:12px 40px;
-  font-family:'Tenor Sans',sans-serif;
-  font-size:10px;letter-spacing:3px;
-  cursor:pointer;text-transform:uppercase;
-  transition:all 0.3s;
+  background:transparent;border:1px solid rgba(255,255,255,0.12);
+  color:rgba(255,255,255,0.5);padding:12px 40px;
+  font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:3px;
+  cursor:pointer;text-transform:uppercase;transition:all 0.3s;
 }
-.btn-siguiente:hover{
-  border-color:rgba(100,210,230,0.35);
-  color:white;
-  box-shadow:0 0 20px rgba(100,210,230,0.08);
-}
+.btn-siguiente:hover{border-color:rgba(100,210,230,0.35);color:white;box-shadow:0 0 20px rgba(100,210,230,0.08);}
 .btn-siguiente:active{transform:scale(0.98);}
 
-/* partícula click */
-.spark{
-  position:fixed;pointer-events:none;z-index:9999;
-  width:4px;height:4px;border-radius:50%;
-  background:rgba(100,210,230,0.9);
-  box-shadow:0 0 8px rgba(100,210,230,0.8);
-}
+/* SPARK */
+.spark{position:fixed;pointer-events:none;z-index:9999;width:4px;height:4px;border-radius:50%;background:rgba(100,210,230,0.9);box-shadow:0 0 8px rgba(100,210,230,0.8);}
 
-/* mobile */
 @media(max-width:600px){
   h1{font-size:36px;}
   .players-grid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));}
@@ -296,13 +190,9 @@ select:hover,select:focus{outline:none;border-color:rgba(100,210,230,0.4);box-sh
 </head>
 <body>
 
+<canvas id="bg-canvas"></canvas>
 <div class="ocean">
   <div class="wave"></div><div class="wave wave2"></div><div class="wave wave3"></div>
-</div>
-<div class="deep-sea">
-  <div class="creature creature1"></div>
-  <div class="creature creature2"></div>
-  <div class="creature creature3"></div>
 </div>
 
 <div class="container">
@@ -331,72 +221,181 @@ select:hover,select:focus{outline:none;border-color:rgba(100,210,230,0.4);box-sh
   </div>
 
   <div class="players-grid" id="playersContainer"></div>
-
   <button class="btn-analizar" id="btnAnalizar">Revelar ronda</button>
-
   <div id="zona-resolucion"></div>
 </div>
 
 <script>
 /* ============================
+   CANVAS — FONDO CON ONDAS
+============================ */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+const bgRipples = [];
+
+function resizeCanvas(){
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function addBgRipple(x, y, color){
+  bgRipples.push({x, y, r:0, alpha:0.6, speed:2.5+Math.random(), color: color||'100,210,230'});
+  setTimeout(()=>{
+    bgRipples.push({x, y, r:0, alpha:0.3, speed:1.8+Math.random()*0.5, color: color||'100,210,230'});
+  }, 120);
+}
+
+// ondas expansivas en cualquier click de la página
+document.addEventListener('click', e=>{
+  addBgRipple(e.clientX, e.clientY);
+});
+document.addEventListener('touchstart', e=>{
+  addBgRipple(e.touches[0].clientX, e.touches[0].clientY);
+}, {passive:true});
+
+function bgLoop(){
+  requestAnimationFrame(bgLoop);
+  ctx.clearRect(0,0,W,H);
+
+  // fondo gradiente oceánico
+  const grad = ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'#010d14');
+  grad.addColorStop(0.5,'#020f18');
+  grad.addColorStop(1,'#000608');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,W,H);
+
+  // luz suave desde arriba
+  const luz = ctx.createRadialGradient(W*0.5,-H*0.1,0,W*0.5,H*0.3,W*0.65);
+  luz.addColorStop(0,'rgba(40,100,140,0.06)');
+  luz.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=luz; ctx.fillRect(0,0,W,H);
+
+  // ondas expansivas
+  for(let i=bgRipples.length-1;i>=0;i--){
+    const r=bgRipples[i];
+    r.r += r.speed;
+    r.alpha -= 0.004;
+    ctx.beginPath();
+    ctx.arc(r.x, r.y, r.r, 0, Math.PI*2);
+    ctx.strokeStyle = `rgba(${r.color},${r.alpha*0.25})`;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    if(r.alpha<=0) bgRipples.splice(i,1);
+  }
+}
+bgLoop();
+
+/* ============================
    AUDIO
 ============================ */
 const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+
 function playTone(freq,dur,type,vol,delay=0){
   const osc=audioCtx.createOscillator();
   const gain=audioCtx.createGain();
   const now=audioCtx.currentTime+delay;
   osc.type=type; osc.frequency.value=freq;
   gain.gain.setValueAtTime(0,now);
-  gain.gain.linearRampToValueAtTime(vol,now+0.02);
+  gain.gain.linearRampToValueAtTime(vol,now+0.03);
   gain.gain.exponentialRampToValueAtTime(0.0001,now+dur);
   osc.connect(gain); gain.connect(audioCtx.destination);
   osc.start(now); osc.stop(now+dur);
 }
-function sonarClick(){ playTone(380,0.08,'sine',0.018); }
-function sonarReveal(){ playTone(280,0.15,'sine',0.02); playTone(420,0.2,'sine',0.01,0.1); }
-function sonarPaso(){ playTone(320,0.1,'sine',0.015); }
+
+// Sonido por tipo de select — graves, profundos
+function sonarEquipo(){
+  // grave cálido — como una corriente
+  playTone(80,0.6,'sine',0.015);
+  playTone(120,0.4,'sine',0.008,0.05);
+}
+function sonarSigno(){
+  // tono medio — como una burbuja
+  playTone(280,0.25,'sine',0.012);
+  playTone(420,0.15,'sine',0.005,0.06);
+}
+function sonarValor(){
+  // cristalino — como agua cayendo
+  playTone(520,0.2,'triangle',0.01);
+  playTone(780,0.15,'sine',0.005,0.04);
+}
+function sonarCantidad(){
+  playTone(160,0.4,'sine',0.012);
+  playTone(240,0.3,'sine',0.006,0.08);
+}
+function sonarReveal(){
+  playTone(280,0.18,'sine',0.02);
+  playTone(420,0.25,'sine',0.012,0.12);
+  playTone(560,0.3,'sine',0.006,0.26);
+}
+function sonarCartaFlip(equipo, index){
+  const base = equipo==='Algas' ? 340 : 260;
+  setTimeout(()=>{
+    playTone(base,0.2,'sine',0.015);
+    playTone(base*1.5,0.15,'triangle',0.006,0.06);
+  }, index*80);
+}
+function sonarPaso(){
+  playTone(320,0.12,'sine',0.014);
+}
 function sonarTornado(){
-  playTone(120,0.5,'sawtooth',0.018);
-  playTone(80,0.6,'triangle',0.012,0.12);
-  playTone(160,0.4,'sawtooth',0.008,0.25);
+  playTone(90,0.6,'sawtooth',0.018);
+  playTone(60,0.8,'triangle',0.012,0.15);
+  playTone(120,0.5,'sawtooth',0.008,0.3);
+  // ondas rojas en el fondo
+  const cx=W/2, cy=H/2;
+  for(let i=0;i<5;i++){
+    setTimeout(()=>{
+      addBgRipple(cx+(Math.random()-0.5)*200, cy+(Math.random()-0.5)*200, '200,80,80');
+    }, i*100);
+  }
 }
 function sonarMarea(){
-  playTone(480,0.8,'sine',0.018);
-  playTone(640,1.0,'sine',0.01,0.15);
-  playTone(820,0.9,'sine',0.006,0.35);
+  playTone(480,1,'sine',0.018);
+  playTone(640,1.2,'sine',0.01,0.18);
+  playTone(820,1,'sine',0.006,0.4);
+  // onda azul grande y lenta desde el centro
+  bgRipples.push({x:W/2, y:H/2, r:0, alpha:0.8, speed:4, color:'80,180,220'});
+  bgRipples.push({x:W/2, y:H/2, r:0, alpha:0.5, speed:2.5, color:'80,180,220'});
 }
 function sonarFinal(){
-  playTone(440,0.3,'sine',0.025);
-  playTone(660,0.4,'sine',0.015,0.18);
+  playTone(440,0.35,'sine',0.025);
+  playTone(660,0.45,'sine',0.015,0.2);
+  playTone(880,0.4,'sine',0.007,0.42);
 }
 
 /* ============================
    SPARKS
 ============================ */
-document.addEventListener('click',e=>{
-  for(let i=0;i<5;i++){
+function sparks(x, y, color){
+  const c = color||'100,210,230';
+  for(let i=0;i<6;i++){
     const s=document.createElement('div');
     s.className='spark';
-    s.style.left=e.clientX+'px'; s.style.top=e.clientY+'px';
+    s.style.left=x+'px'; s.style.top=y+'px';
+    s.style.background=`rgba(${c},0.9)`;
+    s.style.boxShadow=`0 0 8px rgba(${c},0.8)`;
     document.body.appendChild(s);
     const angle=Math.random()*Math.PI*2;
-    const dist=20+Math.random()*30;
+    const dist=15+Math.random()*28;
     s.animate([
       {transform:'translate(-50%,-50%) translate(0,0) scale(1)',opacity:1},
       {transform:`translate(-50%,-50%) translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px) scale(0)`,opacity:0}
-    ],{duration:500+Math.random()*200,easing:'ease-out'});
-    setTimeout(()=>s.remove(),700);
+    ],{duration:400+Math.random()*200,easing:'ease-out'});
+    setTimeout(()=>s.remove(),600);
   }
-});
+}
 
 /* ============================
    JUGADORES
 ============================ */
 const playersContainer = document.getElementById('playersContainer');
-const cantidadSelect   = document.getElementById('cantidadJugadores');
+const cantidadSelect = document.getElementById('cantidadJugadores');
 
-function maxValor(n){ return n<=4 ? 4 : 5; }
+function maxValor(n){ return n<=4?4:5; }
 
 function crearJugadores(){
   playersContainer.innerHTML='';
@@ -416,7 +415,7 @@ function crearJugadores(){
       <div class="field"><label>Signo</label>
         <select class="sel-signo">
           <option value="+">+</option>
-          <option value="−">−</option>
+          <option value="-">−</option>
         </select>
       </div>
       <div class="field"><label>Valor</label>
@@ -425,39 +424,62 @@ function crearJugadores(){
         </select>
       </div>
     `;
-    // color dinámico por equipo
+
+    // color dinámico + sonido por tipo
     const equipoSel=card.querySelector('.sel-equipo');
-    equipoSel.addEventListener('change',()=>{
+    const signoSel=card.querySelector('.sel-signo');
+    const valorSel=card.querySelector('.sel-valor');
+
+    equipoSel.addEventListener('change', e=>{
+      if(audioCtx.state==='suspended') audioCtx.resume();
+      sonarEquipo();
       card.classList.remove('team-algas','team-corales');
       card.classList.add('team-'+equipoSel.value.toLowerCase());
+      const r=card.getBoundingClientRect();
+      addBgRipple(r.left+r.width/2, r.top+r.height/2,
+        equipoSel.value==='Algas'?'80,200,160':'220,120,90');
     });
+    signoSel.addEventListener('change', ()=>{
+      if(audioCtx.state==='suspended') audioCtx.resume();
+      sonarSigno();
+      const r=card.getBoundingClientRect();
+      addBgRipple(r.left+r.width/2, r.top+r.height/2);
+    });
+    valorSel.addEventListener('change', ()=>{
+      if(audioCtx.state==='suspended') audioCtx.resume();
+      sonarValor();
+      const r=card.getBoundingClientRect();
+      addBgRipple(r.left+r.width/2, r.top+r.height/2);
+    });
+
     playersContainer.appendChild(card);
   }
 }
 
 cantidadSelect.addEventListener('change',()=>{
-  sonarClick();
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  sonarCantidad();
   crearJugadores();
   document.getElementById('zona-resolucion').innerHTML='';
 });
-document.getElementById('amuleto').addEventListener('change',sonarClick);
+document.getElementById('amuleto').addEventListener('change',()=>{
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  sonarEquipo();
+});
 crearJugadores();
 
 /* ============================
    RESOLUCIÓN PASO A PASO
 ============================ */
-let pasos=[];
-let pasoActual=0;
+let pasos=[], pasoActual=0;
 
 function mostrarPaso(i){
   if(i>=pasos.length) return;
-  const el=pasos[i];
-  requestAnimationFrame(()=>{
-    el.classList.add('visible');
-  });
+  requestAnimationFrame(()=>{ pasos[i].classList.add('visible'); });
 }
 
 function avanzar(){
+  if(audioCtx.state==='suspended') audioCtx.resume();
   sonarPaso();
   pasoActual++;
   if(pasoActual<pasos.length){
@@ -465,11 +487,9 @@ function avanzar(){
     const btn=document.getElementById('btn-siguiente');
     if(btn){
       if(pasoActual===pasos.length-1){
-        // último paso — scroll al paso y esconder botón
         setTimeout(()=>{ pasos[pasoActual].scrollIntoView({behavior:'smooth',block:'center'}); },100);
         btn.style.display='none';
       } else {
-        // scroll al nuevo paso, luego al botón
         setTimeout(()=>{ pasos[pasoActual].scrollIntoView({behavior:'smooth',block:'center'}); },100);
         setTimeout(()=>{ btn.scrollIntoView({behavior:'smooth',block:'center'}); },450);
       }
@@ -479,9 +499,7 @@ function avanzar(){
 
 function construirPasos(jugadores, mayoria, minoria, sumaMayoriaReal, sumaMinoriaReal, vivos, amuleto, tornado, marea, dañoFinal){
   const zona=document.getElementById('zona-resolucion');
-  zona.innerHTML='';
-  pasos=[];
-  pasoActual=0;
+  zona.innerHTML=''; pasos=[]; pasoActual=0;
 
   function addPaso(html){
     const div=document.createElement('div');
@@ -489,28 +507,25 @@ function construirPasos(jugadores, mayoria, minoria, sumaMayoriaReal, sumaMinori
     div.innerHTML=html;
     zona.appendChild(div);
     pasos.push(div);
-    // separador
-    if(true){
-      const sep=document.createElement('div');
-      sep.className='paso-linea';
-      sep.style.opacity='0';
-      zona.appendChild(sep);
-      setTimeout(()=>sep.style.opacity='1',800);
-    }
+    const sep=document.createElement('div');
+    sep.className='paso-linea';
+    sep.style.opacity='0';
+    zona.appendChild(sep);
+    setTimeout(()=>sep.style.opacity='1',800);
   }
 
   const sumaMayoria=Math.abs(sumaMayoriaReal);
   const sumaMinoria=Math.abs(sumaMinoriaReal);
 
-  // ── PASO 1: Cartas reveladas
-  let cartasHTML=`<div class="paso-label">Las cartas</div><div class="players-grid" style="max-width:100%">`;
+  // ── PASO 1: Cartas con flip animado
+  let cartasHTML=`<div class="paso-label">Las cartas</div><div class="players-grid" style="max-width:100%" id="cartas-reveal">`;
   jugadores.forEach((j,idx)=>{
     const equipo=j.equipo.toLowerCase();
     const aporteLabel=j.aporte>=0?`+${j.aporte}`:String(j.aporte);
     cartasHTML+=`
       <div style="text-align:center">
         <div style="font-size:9px;letter-spacing:3px;opacity:0.3;margin-bottom:8px;text-transform:uppercase">Jugador ${idx+1}</div>
-        <div class="carta-visual team-${equipo}" style="display:flex">
+        <div class="carta-visual team-${equipo}" id="carta-${idx}" style="display:flex">
           <div class="carta-signo">${j.signo}</div>
           <div class="carta-equipo">${j.equipo}</div>
           <div class="carta-numero">${j.valor}</div>
@@ -521,7 +536,7 @@ function construirPasos(jugadores, mayoria, minoria, sumaMayoriaReal, sumaMinori
   cartasHTML+=`</div>`;
   addPaso(cartasHTML);
 
-  // ── PASO 2: Equipos
+  // ── PASO 2: División
   const mayoriaHasAmuleto=(mayoria.nombre===amuleto);
   const minoriaHasAmuleto=(minoria.nombre===amuleto);
   addPaso(`
@@ -561,8 +576,8 @@ function construirPasos(jugadores, mayoria, minoria, sumaMayoriaReal, sumaMinori
 
   // ── PASO 4: Análisis
   const compara=sumaMayoria>vivos
-    ? `${sumaMayoria} supera los ${vivos} jugadores vivos — el daño apunta a la Mayoría.`
-    : `${sumaMayoria} no supera los ${vivos} jugadores vivos — el daño apunta a la Minoría.`;
+    ?`${sumaMayoria} supera los ${vivos} jugadores vivos — el daño apunta a la Mayoría.`
+    :`${sumaMayoria} no supera los ${vivos} jugadores vivos — el daño apunta a la Minoría.`;
   const dañoBase=sumaMayoria>vivos?'Mayoría':'Minoría';
   addPaso(`
     <div class="paso-label">Análisis</div>
@@ -574,62 +589,57 @@ function construirPasos(jugadores, mayoria, minoria, sumaMayoriaReal, sumaMinori
 
   // ── PASO 5 (opcional): Evento especial
   if(marea){
-    addPaso(`
-      <div class="evento-especial marea">
-        <div class="evento-nombre">Marea</div>
-        <div class="evento-desc">La suma de la Mayoría es 0.<br>La Minoría recupera 2 HP.</div>
-      </div>
-    `);
+    addPaso(`<div class="evento-especial marea"><div class="evento-nombre">Marea</div><div class="evento-desc">La suma de la Mayoría es 0.<br>La Minoría recupera 2 HP.</div></div>`);
     setTimeout(sonarMarea,400);
   } else if(tornado){
-    addPaso(`
-      <div class="evento-especial tornado">
-        <div class="evento-nombre">Tornado</div>
-        <div class="evento-desc">La Minoría supera a la Mayoría.<br>El daño se invierte.</div>
-      </div>
-    `);
+    addPaso(`<div class="evento-especial tornado"><div class="evento-nombre">Tornado</div><div class="evento-desc">La Minoría supera a la Mayoría.<br>El daño se invierte.</div></div>`);
     setTimeout(sonarTornado,400);
   }
 
   // ── PASO FINAL: Resultado
   if(marea){
-    addPaso(`
-      <div class="resultado-final">
-        <div class="resultado-tag">Resultado final</div>
-        <div class="resultado-recupera">+2 HP</div>
-        <div class="resultado-sub">la minoría recupera vida</div>
-      </div>
-    `);
+    addPaso(`<div class="resultado-final"><div class="resultado-tag">Resultado final</div><div class="resultado-recupera">+2 HP</div><div class="resultado-sub">la minoría recupera vida</div></div>`);
   } else {
     const equipoFinal=dañoFinal==='Mayoría'?mayoria.nombre:minoria.nombre;
     const claseColor=equipoFinal.toLowerCase();
-    addPaso(`
-      <div class="resultado-final">
-        <div class="resultado-tag">Resultado final</div>
-        <div class="resultado-daño ${claseColor}">${sumaMayoria}</div>
-        <div class="resultado-sub">de daño para <em>${equipoFinal}</em> · ${dañoFinal}</div>
-      </div>
-    `);
+    addPaso(`<div class="resultado-final"><div class="resultado-tag">Resultado final</div><div class="resultado-daño ${claseColor}">${sumaMayoria}</div><div class="resultado-sub">de daño para <em>${equipoFinal}</em> · ${dañoFinal}</div></div>`);
     setTimeout(sonarFinal,400);
   }
 
-  // botón siguiente — se inserta después de cada paso excepto el último
+  // botón siguiente
   const btnSig=document.createElement('button');
-  btnSig.className='btn-siguiente';
-  btnSig.id='btn-siguiente';
+  btnSig.className='btn-siguiente'; btnSig.id='btn-siguiente';
   btnSig.textContent='Siguiente';
-  btnSig.addEventListener('click',avanzar);
+  btnSig.addEventListener('click', avanzar);
   zona.appendChild(btnSig);
 
-  // revelar primer paso
+  // revelar primer paso con flip de cartas
   mostrarPaso(0);
   sonarReveal();
 
-  // scroll suave al botón siguiente para que el usuario lo vea
+  // flip animado de cada carta con delay
+  jugadores.forEach((j,idx)=>{
+    setTimeout(()=>{
+      const carta=document.getElementById(`carta-${idx}`);
+      if(carta){
+        carta.style.display='flex';
+        requestAnimationFrame(()=>{ carta.classList.add('flipped'); });
+        sonarCartaFlip(j.equipo, 0);
+        // onda en posición de la carta
+        const r=carta.getBoundingClientRect();
+        addBgRipple(r.left+r.width/2, r.top+r.height/2,
+          j.equipo==='Algas'?'80,200,160':'220,120,90');
+        sparks(r.left+r.width/2, r.top+r.height/2,
+          j.equipo==='Algas'?'80,200,160':'220,120,90');
+      }
+    }, 200+idx*150);
+  });
+
+  // scroll al botón
   setTimeout(()=>{
     const btn=document.getElementById('btn-siguiente');
     if(btn) btn.scrollIntoView({behavior:'smooth',block:'center'});
-  },500);
+  }, 300+jugadores.length*150+400);
 }
 
 /* ============================
@@ -637,7 +647,7 @@ function construirPasos(jugadores, mayoria, minoria, sumaMayoriaReal, sumaMinori
 ============================ */
 document.getElementById('btnAnalizar').addEventListener('click',function(){
   if(audioCtx.state==='suspended') audioCtx.resume();
-  sonarClick();
+  sonarReveal();
 
   const cards=document.querySelectorAll('.player-card');
   const jugadores=[];
@@ -653,14 +663,10 @@ document.getElementById('btnAnalizar').addEventListener('click',function(){
   const algas=jugadores.filter(j=>j.equipo==='Algas');
   const corales=jugadores.filter(j=>j.equipo==='Corales');
 
-  // todos en el mismo equipo
   if(algas.length===0||corales.length===0){
     const zona=document.getElementById('zona-resolucion');
-    zona.innerHTML=`
-      <div class="paso-bloque visible" style="text-align:center;padding:48px 0">
-        <div class="paso-label">Sin conflicto</div>
-        <div class="analisis-texto">Todos eligieron el mismo equipo.<br><span>La ronda se reinicia.</span></div>
-      </div>`;
+    zona.innerHTML=`<div class="paso-bloque visible" style="text-align:center;padding:48px 0"><div class="paso-label">Sin conflicto</div><div class="analisis-texto">Todos eligieron el mismo equipo.<br><span>La ronda se reinicia.</span></div></div>`;
+    setTimeout(()=>zona.scrollIntoView({behavior:'smooth',block:'center'}),300);
     return;
   }
 
@@ -678,7 +684,6 @@ document.getElementById('btnAnalizar').addEventListener('click',function(){
   const sumaMinoriaReal=minoria.jugadores.reduce((a,b)=>a+b.aporte,0);
   const sumaMayoria=Math.abs(sumaMayoriaReal);
   const sumaMinoria=Math.abs(sumaMinoriaReal);
-
   const marea=sumaMayoria===0;
   const dañoBase=sumaMayoria>vivos?'Mayoría':'Minoría';
   const tornado=!marea&&sumaMinoria>sumaMayoria;
@@ -686,14 +691,7 @@ document.getElementById('btnAnalizar').addEventListener('click',function(){
 
   construirPasos(jugadores,mayoria,minoria,sumaMayoriaReal,sumaMinoriaReal,vivos,amuleto,tornado,marea,dañoFinal);
 });
-
-/* ============================
-   UPDATE BOTÓN SIGUIENTE
-============================ */
-// El botón avanza, y se oculta cuando llega al último paso
-document.getElementById('zona-resolucion').addEventListener('click',e=>{
-  // delegado en construirPasos
-});
 </script>
 </body>
 </html>
+ENDOFFILE
