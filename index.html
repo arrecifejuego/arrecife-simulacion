@@ -234,7 +234,9 @@ function construirFases(R){
   ]);
   const glowMayoria=JJ.map((j,i)=>([{idx:i,tipo:'eq',clase:j.equipo===R.mayoria.nombre?'glow-algas-c':'glow-corales-c'}])).flat();
   const empate=R.mayoria.jug.length===R.minoria.jug.length;
-  const empateT=empate?` <em>(empate — amuleto en J${R.amuletoIdx+1}, ${R.amuleto})</em>`:'';
+  const empateT=empate
+    ? `<br><em>Hay empate. El amuleto está en <strong>J${R.amuletoIdx+1}</strong> (${R.amuleto}) — eso define la Mayoría.</em>`
+    : '';
   const detMay=R.mayoria.jug.map(j=>`${j.signo==='+'?'+':'-'}${j.valor}`).join(' ');
   const detMin=R.minoria.jug.map(j=>`${j.signo==='+'?'+':'-'}${j.valor}`).join(' ');
   const comparaT=R.sumaM>R.vivos
