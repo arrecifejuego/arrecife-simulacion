@@ -367,8 +367,32 @@ function render(n){
 }
 
 document.getElementById('btnAvanzar').addEventListener('click',()=>{if(aC.state==='suspended')aC.resume();if(actual<FASES.length-1){actual++;render(actual);}});
-document.getElementById('btnReiniciar').addEventListener('click',()=>{if(aC.state==='suspended')aC.resume();iniciarRonda();});
+document.getElementById('btnReiniciar').addEventListener('click',()=>{if(aC.state==='suspended')aC.resume();iniciarRonda();
+
+// Comunicar altura real al iframe padre (Google Sites)
+function notifyHeight(){
+  const h = document.body.scrollHeight;
+  window.parent.postMessage({type:'resize', height:h}, '*');
+}
+// Al cargar y en cada cambio de contenido
+window.addEventListener('load', notifyHeight);
+const observer = new MutationObserver(notifyHeight);
+observer.observe(document.body, {childList:true, subtree:true, attributes:true});
+window.addEventListener('resize', notifyHeight);
+});
 iniciarRonda();
+
+// Comunicar altura real al iframe padre (Google Sites)
+function notifyHeight(){
+  const h = document.body.scrollHeight;
+  window.parent.postMessage({type:'resize', height:h}, '*');
+}
+// Al cargar y en cada cambio de contenido
+window.addEventListener('load', notifyHeight);
+const observer = new MutationObserver(notifyHeight);
+observer.observe(document.body, {childList:true, subtree:true, attributes:true});
+window.addEventListener('resize', notifyHeight);
+
 
 </script>
 </body>
