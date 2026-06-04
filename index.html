@@ -8,7 +8,7 @@
 <style>
 :root{--algas:rgba(80,200,160,1);--corales:rgba(220,120,90,1);--cyan:rgba(100,210,230,1);--bg:#050a0d;}
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;min-height:100%;background:var(--bg);color:white;overflow-x:hidden;}
+html{width:100%;height:100%;background:var(--bg);}body{width:100%;min-height:100%;background:var(--bg);color:white;overflow-x:hidden;overflow-y:auto;}
 body{font-family:'Tenor Sans',sans-serif;}
 #bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
 .ocean{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none;}
@@ -362,7 +362,7 @@ function render(n){
   if(f.btn){btn.textContent=f.btn;btn.style.display='inline-block';btnR.style.display='none';}
   else{btn.style.display='none';btnR.style.display='block';sonarFin();}
   if(f.snd)setTimeout(f.snd,350);else sonarPaso();
-  window.scrollTo({top:0,behavior:'smooth'});
+  document.documentElement.scrollTop=0; document.body.scrollTop=0;
   addR(W/2,H/2);
 }
 
